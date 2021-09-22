@@ -1,0 +1,36 @@
+/************************************************************
+* Code.gs
+* EKSPERIMEN #2 * https://telegram-bot-script.blogspot.com/2021/09/facebook-shop-dengan-google-apps-script-eksperimen-2.html
+* Menyimpan parameter GET dari Facebook Shop ke Google Sheets 
+*************************************************************/
+
+const googleWebAppURL = "url_webapps_anda";
+const googleSheetID = "google_sheets_id";
+
+function doGet(e) {
+  
+  var parameterToko = e.parameter;
+  
+  var produk = parameterToko.produk;
+  var warna = parameterToko.warna;
+  var harga = parameterToko.harga;
+  var toko = parameterToko.toko;
+
+  /**************************
+  * SIMPAN KE GOOGLE SHEETS *
+  ***************************/
+  var namaSheet = "DATA";
+  var sheet = SpreadsheetApp.openById(googleSheetID).getSheetByName(namaSheet);
+  sheet.appendRow([ produk, warna, harga, toko ]);
+
+  /**************************
+  * TAMPILKAN KE LAMAN HTML *
+  ***************************/
+  return HtmlService.createHtmlOutput(
+    "PRODUK : " + produk
+    + "<br>" + "WARNA : " + warna
+    + "<br>" + "HARGA : " + harga
+    + "<br>" + "TOKO : " + toko
+  );
+
+}
