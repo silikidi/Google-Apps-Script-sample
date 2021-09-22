@@ -1,0 +1,48 @@
+/**************************************************
+* Code.gs
+* EKSPERIMEN #1: * https://telegram-bot-script.blogspot.com/2021/09/facebook-shop-dengan-google-apps-script-eksperimen-1.html
+* Interaksi Facebook Shop dengan Google Web Apps
+***************************************************/
+const googleWebAppURL = "url_webapps_anda";
+
+function doGet(e) {
+  var parameterToko = JSON.stringify(e);
+  return HtmlService.createHtmlOutput( parameterToko );
+}
+
+
+/*********************************************
+* Link request GET Facebook Shop:
+* https://url_web_apps?produk=kaos&warna=hitam&harga=100000&toko=facebook
+* Response dari Web Apps ditampilkan dalam laman HTML dengan struktur string JSON:
+
+{
+   "parameters": {
+      "produk":[
+         "kaos"
+      ],
+      "warna":[
+         "hitam"
+      ],
+      "harga":[
+         "100000"
+      ],
+      "toko":[
+         "facebook"
+      ],
+      "fbclid":[
+         "IwAR3FFd6elMBhZA14E9XTtbc8"
+      ]
+   },
+   "contentLength":-1,
+   "contextPath":"",
+   "queryString":"produk=kaos&warna=hitam&harga=100000&toko=facebook&fbclid=IwAR3FFd6elMBhZA14E9XTtbc8",
+   "parameter": {
+      "produk":"kaos",
+      "warna":"hitam",
+      "harga":"100000",
+      "toko":"facebook",
+      "fbclid":"IwAR3FFd6elMBhZA14E9XTtbc8"
+   }
+}
+*********************************************/
