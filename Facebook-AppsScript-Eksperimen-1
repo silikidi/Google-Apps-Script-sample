@@ -2,8 +2,7 @@
 * EKSPERIMEN #1
 * https://telegram-bot-script.blogspot.com/2021/09/facebook-shop-dengan-google-apps-script-eksperimen-1.html
 * Interaksi Facebook Shop dengan Google Apps Script
-* Link request yang disimpan di Facebook Shop:
-* https://url_web_apps?produk=kaos&warna=hitam&harga=100000&toko=facebook
+* Link request yang disimpan di Facebook Shop https://url_web_apps?produk=kaos&warna=hitam&harga=100000&toko=facebook
 * Hasil interaksi ditampilkan dalam laman HTML
 ***************************************************/
 const googleWebAppURL = "url_webapps_anda";
