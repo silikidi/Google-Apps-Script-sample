@@ -1,0 +1,42 @@
+/*******************************************
+ * Simpan tersendiri ke file Code-js.html *
+********************************************/
+
+<script>
+google.script.url.getLocation(function(location) {
+  
+  var lokasi = location.parameter;
+  
+  /*********************************************
+   * bersihkan dari parameter fbclid facebook
+   * https://stackoverflow.com/a/208106/12682081 
+  **********************************************/
+  if (lokasi.hasOwnProperty("fbclid")){
+    delete lokasi.fbclid;
+  }
+
+  /**************************************************************
+   * Buat DOM baru berupa elemen html untuk setiap parameternya
+   * https://masteringjs.io/tutorials/fundamentals/foreach-object
+  ***************************************************************/
+  var paragrafTag = document.createElement("h3");
+  Object.keys(lokasi).forEach(key => {
+    
+    paragrafTag.appendChild(document.createTextNode(key + " : " + lokasi[key]));
+
+    /************************************************
+     * Jangan tambahkan <br> untuk paramater terakhir
+     * https://stackoverflow.com/a/16590272/12682081
+    *************************************************/
+    if ( lokasi[key] != lokasi[Object.keys(lokasi)[Object.keys(lokasi).length - 1]] ){
+
+      paragrafTag.appendChild(document.createElement("br"));
+
+    }
+
+  });
+  
+  document.body.appendChild(paragrafTag);
+
+});
+</script>
