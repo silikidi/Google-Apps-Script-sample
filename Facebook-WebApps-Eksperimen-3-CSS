@@ -1,0 +1,8 @@
+/*******************************************
+ * Simpan tersendiri ke file Code-css.html *
+********************************************/
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;900&display=swap');
+body {font-family: 'Montserrat', sans-serif;}
+</style>
