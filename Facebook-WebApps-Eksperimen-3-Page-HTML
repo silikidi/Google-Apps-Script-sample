@@ -1,0 +1,15 @@
+/********************************************
+ * Simpan tersendiri ke file Code-page.html *
+*********************************************/
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_blank">
+    <?!= include('Code-css'); ?>
+  </head>
+  <body>
+    <h1>KERANJANG BELANJA</h1>
+    <h2>Item belanja anda:</h2>
+    <?!= include('Code-js'); ?>
+  </body>
+</html>
