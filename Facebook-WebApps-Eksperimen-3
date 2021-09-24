@@ -5,8 +5,8 @@
  * HTML, CSS dan JS dipisahkan tersendiri untuk memudahkan
 **********************************************************/
 
-const googleWebAppURL = "https://script.google.com/macros/s/AKfycbxvl4jXsnp48W38v1Z34rpJSmZXuDeZZ2NyV8nw0sP5DS54gN7EKXXnBdpL2duK36LOFw/exec";
-const googleSheetID = "1xCrYKgONnHHZX0nXKvq18Js4a_wo00HGOZF9U8P8OCw";
+const googleWebAppURL = "url_webapps";
+const googleSheetID = "google_sheets_id";
 
 function doGet(e) {
   
