@@ -1,7 +1,6 @@
-/*******************************************
- * Simpan tersendiri ke file Code-js.html *
-********************************************/
-
+/*********************************************************************************
+* Simpan tambahan javascript ini di Apps Script sebagai file terpisah Code-js.html
+**********************************************************************************/
 <script>
 google.script.url.getLocation(function(location) {
   
