@@ -34,7 +34,7 @@ function doPost(e) {
 
   /***********************************************************
   * SETIAP KOMPONEN DATA DITAMPUNG DALAM VARIABEL TERSENDIRI *
-  * Hanya dibutuhkan chatid untuk syarat pengiriman pesan
+  * Hanya dibutuhkan chat_id untuk syarat pengiriman pesan
   * Anda bisa mencoba mengirimkan komponen data lainnya:
   ************************************************************
   var messageid = data.message.message_id;
