@@ -1,0 +1,54 @@
+/*********************************************
+* Salin ke file Code.gs Apps Script *
+* Kirim Pesan Ke Telegram Dengan Apps Script *
+* https://telegram-bot-script.blogspot.com/2021/09/kirim-pesan-ke-telegram-dengan-apps-script.html
+**********************************************/
+const telegramAPIToken = "api_token_bot_anda";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const googleWebAppsURL = "url_web_apps_anda";
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+/***********************************************************
+* Fungsi untuk menangkap dan mengolah respon dari Telegram *
+************************************************************/
+function doPost(e) {
+
+  /*******************************************
+  * KONVERSI DAN TAMPUNG DALAM VARIABEL data *
+  ********************************************/
+  var data = JSON.parse(e.postData.contents);
+
+  /***********************************************************
+  * SETIAP KOMPONEN DATA DITAMPUNG DALAM VARIABEL TERSENDIRI *
+  ************************************************************/
+  var chatid = data.message.chat.id;
+
+  /**********************
+  * UJICOBA KIRIM PESAN *
+  ***********************/
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String(chatid),
+      text: JSON.stringify(data)
+    }
+  };
+
+  UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);
+  
+}
