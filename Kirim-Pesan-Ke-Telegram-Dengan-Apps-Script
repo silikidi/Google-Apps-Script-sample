@@ -47,9 +47,9 @@ function doPost(e) {
   ************************************************************/
   var chatid = data.message.chat.id;
 
-  /**********************
-  * UJICOBA KIRIM PESAN *
-  ***********************/
+  /*************************************
+  * SIAPKAN OPSI PENDUKUNG DAN PAYLOAD *
+  **************************************/
   var dataPesan = {
     method: "post",
     payload: {
@@ -59,6 +59,9 @@ function doPost(e) {
     }
   };
 
+  /*****************
+  * KIRIMKAN PESAN *
+  ******************/
   UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);
   
 }
