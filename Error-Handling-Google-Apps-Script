@@ -8,6 +8,21 @@ const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
 const telegramAdminID = "ID_USER_ANDA";
 const googleWebAppsURL = "URL_WEB_APPS_ANDA";
 
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
 /*********************
 * FUNGSI KIRIM PESAN *
 **********************/
