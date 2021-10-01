@@ -1,8 +1,8 @@
-/***********************************************************************************************************
+/****************************************************************************************
 * Salin ke file Code.gs Apps Script
 * ERROR HANDLING GOOGLE APPS SCRIPT
 * https://telegram-bot-script.blogspot.com/2021/09/handling-error-google-apps-script.html
-************************************************************************************************************/
+*****************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
 const telegramAdminID = "ID_USER_ANDA";
