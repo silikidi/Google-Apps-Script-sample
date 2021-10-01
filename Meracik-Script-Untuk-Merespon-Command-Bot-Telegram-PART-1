@@ -1,8 +1,8 @@
-/****************************************************************************************
+/****************************************************************************************************************
 * Salin ke file Code.gs Apps Script
 * Meracik Script Untuk Merespon Command Bot Telegram - PART 1
 * https://telegram-bot-script.blogspot.com/2021/10/meracik-script-untuk-merespon-command-bot-telegram-part-1.html
-*****************************************************************************************/
+*****************************************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
 const telegramAdminID = "ID_USER_ANDA";
