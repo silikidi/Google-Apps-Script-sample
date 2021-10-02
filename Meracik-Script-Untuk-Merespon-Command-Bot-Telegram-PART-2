@@ -1,0 +1,112 @@
+/****************************************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Meracik Script Untuk Merespon Command Bot Telegram - PART 2
+* 
+*****************************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+    var dataPesan = {
+      method: "post",
+      payload: {
+        method: "sendMessage",
+        chat_id: String( targetID ),
+        text: String( pesan )
+      }
+    };
+    UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+}
+
+/*********************************************
+* FUNGSI PENANGKAP POST RESPON DARI TELEGRAM *
+**********************************************/
+function doPost(e) {
+
+  var data = JSON.parse(e.postData.contents);
+  var chatid = data.message.chat.id;
+  var messageText = data.message.hasOwnProperty("text") ? data.message.text : "";
+
+  try {
+
+    /************************************************
+    * Periksa apakah kiriman JSON berisi pesan teks *
+    *************************************************/
+    if ( messageText !== "" ) {
+
+      /*********************************************
+      * Periksa properti teks diawali garis miring *
+      * Bila ya diasumsikan sebagai command *
+      **********************************************/
+      if ( /^\//.test(messageText) ) {
+
+        /************************************************************
+        * Pisahkan command dari distorsi karakter yang menyertainya *
+        *************************************************************/
+        var messageSplit = messageText.split(" ");
+
+        /********************************************************
+        * Periksa apakah teks tersebut sama dengan menu command *
+        *********************************************************/
+        if ( messageSplit[0] === "/start" ){
+          
+          kirimPesan(
+            chatid,
+            "Halo... " 
+            + data.message.from.first_name 
+            + "\n" 
+            + "selamat datang di bot pertamaku." 
+          );
+
+        } else if ( messageSplit[0] === "/about" ){
+          
+          kirimPesan( chatid, "BOT PERTAMAKU dibuat oleh SiLiKiDi" );
+
+        } else if ( messageSplit[0] === "/channel" ){
+          
+          kirimPesan( chatid, "@rscibabat atau https://t.me/rscibabat" );
+
+        } else if ( messageSplit[0] === "/web" ){
+          
+          kirimPesan( chatid, "https://telegram-bot-script.blogspot.com" );
+
+        } else if ( messageSplit[0] === "/facebook" ){
+          
+          kirimPesan( chatid, "Facebook Page : fb.me/telegrambotscript" );
+
+        } else if ( messageSplit[0] === "/twitter" ){
+          
+          kirimPesan( chatid, "Twitter" + " : " + "twitter.com/silikidimi" );
+
+        }
+
+      } else kirimPesan( chatid, "Pesan bukan command bot." );
+
+    } else kirimPesan( chatid, "Bukan pesan teks karena tidak ada properti text dalam kiriman JSON." );
+
+  
+  } catch(e) {
+    kirimPesan( telegramAdminID, e );
+  }
+
+}
