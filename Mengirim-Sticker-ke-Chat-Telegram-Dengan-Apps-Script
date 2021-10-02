@@ -1,0 +1,63 @@
+/****************************************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Mengirim Sticker ke Chat Telegram dengan Apps Script
+* 
+*****************************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+/********************************************************************
+* Setiap kedatangan respon JSON akan dibalas dengan kiriman Sticker *
+*********************************************************************/
+function doPost(e) {
+
+  var data = JSON.parse(e.postData.contents);
+  var chatid = data.message.chat.id;
+
+  try {
+
+    /*********************************************
+    * Periksa apakah chat_id ada di kiriman JSON *
+    **********************************************/
+    if ( chatid ) {
+
+      /******************************************
+      * Kirim sticker dengan metode sendSticker *
+      *******************************************/
+      var dataSticker = {
+        method: "post",
+        payload: {
+          method: "sendSticker",
+          chat_id: String(chatid),
+          sticker: "CAACAgIAAxkBAAIBGWFYVFaauGjspkTx4gggEyaooiDGAAJMAAMNttIZ9lv_wf7XvJshBA"
+        }
+      };
+
+      UrlFetchApp.fetch(telegramAPIURL + "/", dataSticker);
+
+
+    } else kirimPesan( chatid, "chat_id tidak terdapat dalam kiriman JSON." );
+
+  
+  } catch(e) {
+    kirimPesan( telegramAdminID, e );
+  }
+
+}
