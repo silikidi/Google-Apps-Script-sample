@@ -23,6 +23,21 @@ function setWebhook() {
   Logger.log(response.getContentText());
 }
 
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+    var dataPesan = {
+      method: "post",
+      payload: {
+        method: "sendMessage",
+        chat_id: String( targetID ),
+        text: String( pesan )
+      }
+    };
+    UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+}
+
 /********************************************************************
 * Setiap kedatangan respon JSON akan dibalas dengan kiriman Sticker *
 *********************************************************************/
