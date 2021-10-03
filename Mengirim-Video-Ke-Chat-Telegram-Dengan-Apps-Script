@@ -1,8 +1,8 @@
-/***********************************************************************************************************
+/*********************************************************************************************************
 * Salin ke file Code.gs Apps Script
 * Mengirim Video ke Chat Telegram dengan Apps Script
-* 
-************************************************************************************************************/
+* https://telegram-bot-script.blogspot.com/2021/10/mengirim-video-ke-chat-telegram-dengan-apps-script.html
+**********************************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
 const telegramAdminID = "ID_USER_ANDA";
