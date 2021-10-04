@@ -1,8 +1,8 @@
-/*********************************************************************************************************
+/***************************************************************************************************************
 * Salin ke file Code.gs Apps Script
 * Mengirim Foto ke Chat Telegram dengan Apps Script
-* 
-**********************************************************************************************************/
+* https://telegram-bot-script.blogspot.com/2021/10/mengirim-gambar-foto-ke-chat-telegram-dengan-apps-script.html
+****************************************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
 const telegramAdminID = "ID_USER_ANDA";
@@ -58,7 +58,7 @@ function doPost(e) {
         payload: {
           method: "sendPhoto",
           chat_id: String(chatid),
-          video: "https://res.cloudinary.com/telegram-bot-script/image/upload/v1633189817/demo/images/telegram-brosur-9.png",
+          photo: "https://res.cloudinary.com/telegram-bot-script/image/upload/v1621289817/demo/images/telegram-brosur-9.png",
           caption: "kiriman foto di bawah <5 MB"
         }
       };
