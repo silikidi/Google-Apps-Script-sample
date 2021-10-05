@@ -27,15 +27,15 @@ function setWebhook() {
 * FUNGSI KIRIM PESAN *
 **********************/
 function kirimPesan( targetID, pesan ) {
-    var dataPesan = {
-      method: "post",
-      payload: {
-        method: "sendMessage",
-        chat_id: String( targetID ),
-        text: String( pesan )
-      }
-    };
-    UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
 }
 
 /*****************************************************************
@@ -55,15 +55,13 @@ function doPost(e) {
         payload: {
           method: "sendMessage",
           chat_id: String( chatid ),
-          text: JSON.stringify(data)
+          text: JSON.stringify( data )
         }
       };
       
       UrlFetchApp.fetch(telegramAPIURL + "/", dataJSON); 
 
-
     } else kirimPesan( chatid, "chat_id tidak terdapat dalam kiriman JSON." );
-
   
   } catch(e) {
     kirimPesan( telegramAdminID, e );
