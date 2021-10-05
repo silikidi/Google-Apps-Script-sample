@@ -1,0 +1,72 @@
+/***************************************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Melihat Struktur JSON Kiriman Telegram
+* 
+****************************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+    var dataPesan = {
+      method: "post",
+      payload: {
+        method: "sendMessage",
+        chat_id: String( targetID ),
+        text: String( pesan )
+      }
+    };
+    UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+}
+
+/*****************************************************************
+* Setiap kedatangan respon JSON akan dikirim kembali ke Telegram *
+******************************************************************/
+function doPost(e) {
+
+  var data = JSON.parse(e.postData.contents);
+  var chatid = data.message.chat.id;
+
+  try {
+    
+    if ( chatid ) {
+      
+      var dataJSON = {
+        method: "post",
+        payload: {
+          method: "sendMessage",
+          chat_id: String( chatid ),
+          text: JSON.stringify(data)
+        }
+      };
+      
+      UrlFetchApp.fetch(telegramAPIURL + "/", dataJSON); 
+
+
+    } else kirimPesan( chatid, "chat_id tidak terdapat dalam kiriman JSON." );
+
+  
+  } catch(e) {
+    kirimPesan( telegramAdminID, e );
+  }
+
+}
