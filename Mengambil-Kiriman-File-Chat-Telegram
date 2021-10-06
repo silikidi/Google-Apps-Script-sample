@@ -1,0 +1,165 @@
+/*******************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Mengambil Kiriman File Chat Telegram
+* https://telegram-bot-script.blogspot.com/2021/10/mengambil-kiriman-file-chat-telegram.html
+********************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+}
+
+
+/*******************************
+* FUNGSI MENDAPATKAN file_path *
+********************************/
+function getFilePath( chatID, fileID ) {
+    
+    var dataFile = {
+      method: "post",
+      payload: {
+        method: "getFile",
+        chat_id: String( chatID ),
+        file_id: String( fileID )
+      }
+    };
+    var response = UrlFetchApp.fetch( telegramAPIURL + "/", dataFile );
+    var data = JSON.parse( response );
+
+    return data.result.file_path;
+
+    /***************************************************
+    Logger.log( data );
+    Logger.log( data.result );
+    Logger.log( "file_path: " + data.result.file_path );
+    Logger.log( "file_size: " + data.result.file_size );
+    Logger.log( "file_id: " + data.result.file_id );
+    Logger.log( "file_unique_id: " + data.result.file_unique_id );
+    Logger.log( "file_url: " + "https://api.telegram.org/file/bot" + telegramAPIToken + "/" + data.result.file_path );
+    ****************************************************/
+
+}
+
+
+/*******************************
+* FUNGSI INTERAKSI DENGAN USER *
+********************************/
+function doPost(e) {
+
+  var data = JSON.parse(e.postData.contents);
+  var chatid = data.message.chat.id;
+
+  try {
+    
+    if ( chatid ) {
+      
+      
+      /*****************
+      * JSON STRUCTURE *
+      ******************/
+      var dataJSON = {
+        method: "post",
+        payload: {
+          method: "sendMessage",
+          chat_id: String( chatid ),
+          text: JSON.stringify( data )
+        }
+      };
+      UrlFetchApp.fetch(telegramAPIURL + "/", dataJSON);
+
+
+      /*********************************************
+      * OBJECT WRAP TEST
+      * https://stackoverflow.com/a/41532415/12682081
+      * http://web.archive.org/web/20161108071447/http://blog.osteele.com/posts/2007/12/cheap-monads/
+      **********************************************/
+      if ( (( data || {} ).message || {}).document ){
+        
+        var fileID = data.message.document.file_id;
+        var fileType = "document";
+
+      } else if ( (( data || {} ).message || {}).photo ){
+        
+        var fileID = data.message.photo.file_id;
+        var fileType = "photo";
+
+      } else if ( (( data || {} ).message || {}).video ){
+        
+        var fileID = data.message.video.file_id;
+        var fileType = "video";
+
+      } else if ( (( data || {} ).message || {}).audio ){
+        
+        var fileID = data.message.audio.file_id;
+        var fileType = "audio";
+
+      } else if ( (( data || {} ).message || {}).voice ){
+        
+        var fileID = data.message.voice.file_id;
+        var fileType = "voice";
+
+      } else if ( (( data || {} ).message || {}).video_note ){
+        
+        var fileID = data.message.video_note.file_id;
+        var fileType = "video_note";
+
+      }
+      
+      
+      if ( fileID && fileType ) {
+        
+        var filePath = getFilePath( chatid, fileID );
+        var file_url = "https://api.telegram.org/file/bot" + telegramAPIToken + "/" + String(filePath);
+        var dataFile = {
+          method: "post",
+          payload: {
+            method: "sendMessage",
+            chat_id: String( chatid ),
+            parse_mode: "HTML",
+            text: 
+              "FILE TYPE: " + "<b><i>" + fileType.toUpperCase() + "</i></b>" + "\n"
+              + "URL FILE:" + "\n" + file_url
+          }
+        };
+        UrlFetchApp.fetch(telegramAPIURL + "/", dataFile); 
+        
+      }
+
+
+    } else kirimPesan( chatid, "chat_id tidak terdapat dalam kiriman JSON." );
+  
+  } catch(e) {
+    kirimPesan( telegramAdminID, e );
+  }
+
+}
