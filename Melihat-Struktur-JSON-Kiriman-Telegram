@@ -55,7 +55,7 @@ function doPost(e) {
         payload: {
           method: "sendMessage",
           chat_id: String( chatid ),
-          text: JSON.stringify( data )
+          text: JSON.stringify( data, null, 4 )
         }
       };
       
