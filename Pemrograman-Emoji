@@ -73,7 +73,6 @@ function doPost(e) {
           method: "post",
           payload: {
             method: "sendDice",
-            parse_mode: "HTML",
             reply_to_message_id: String( data.message.message_id ),
             chat_id: String( chatid ),
             emoji: String( data.message.dice.emoji )
