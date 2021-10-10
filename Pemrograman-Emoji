@@ -76,7 +76,7 @@ function doPost(e) {
             parse_mode: "HTML",
             reply_to_message_id: String( data.message.message_id ),
             chat_id: String( chatid ),
-            text: String( data.message.dice.emoji )
+            emoji: String( data.message.dice.emoji )
           }
         };
         UrlFetchApp.fetch( telegramAPIURL + "/", dataDiceReply );
