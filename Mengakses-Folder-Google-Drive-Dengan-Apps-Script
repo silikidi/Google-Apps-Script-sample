@@ -1,3 +1,8 @@
+/*******************************************************************************************************
+* Mengakses Folder Google Drive Dengan Apps Script
+* https://telegram-bot-script.blogspot.com/2021/10/mengakses-folder-google-drive-dengan-apps-script.html
+********************************************************************************************************/
+
 const googleFolderID = "ID_FOLDER_ANDA";
 
 function driveFolderContent() {
