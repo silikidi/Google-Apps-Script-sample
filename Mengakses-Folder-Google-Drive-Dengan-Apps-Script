@@ -1,0 +1,17 @@
+const googleFolderID = "ID_FOLDER_ANDA";
+
+function driveFolderContent() {
+
+  var folderContent = DriveApp.getFolderById( googleFolderID );
+  var folderList = folderContent.getFolders();
+
+  if ( folderList.hasNext() ){
+    
+    while ( folderList.hasNext() ) {
+      var folder = folderList.next();
+      Logger.log( "SUBFOLDER: " + folder.getName() );
+    }
+
+  } else Logger.log( "FOLDER tidak mempunyai SUBFOLDER!" );
+
+}
