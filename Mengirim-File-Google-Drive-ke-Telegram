@@ -1,0 +1,120 @@
+/*********************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Mengirim File Google Drive ke Telegram
+* https://telegram-bot-script.blogspot.com/2021/10/mengirim-file-google-drive-ke-telegram.html
+**********************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+const googleFolderID = "ID_FOLDER_ANDA";
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/***************************
+* FUNGSI KIRIM CHAT ACTION *
+****************************/
+function kirimChatAction( chatid, action ) {
+  var dataAction = {
+    method: "post",
+    payload: {
+      method: "sendChatAction",
+      chat_id: String( chatid ),
+      action: String( action )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataAction );
+}
+
+
+/*********************************************************
+* Setiap kiriman user akan dikirim balik dengan file PDF *
+**********************************************************/
+function doPost(e) {
+
+  var data = JSON.parse(e.postData.contents);
+  var chatid = data.message.chat.id;
+
+  try {
+    
+    if ( chatid ) {
+      
+      var folderContent = DriveApp.getFolderById( googleFolderID );
+      var fileList = folderContent.getFiles();
+
+      if ( fileList.hasNext() ){
+        
+        while ( fileList.hasNext() ) {
+          
+          var file = fileList.next();
+          var fileName = file.getName();
+          var fileMIME = file.getMimeType();
+          var fileID = file.getId();
+          var filePDF = file.getAs( "application/pdf" );
+          
+          
+          /********************************************************************************************************
+          * pasang status "sending a file" dengan sendChatAction
+          * https://telegram-bot-script.blogspot.com/2021/10/menampilkan-status-progres-bot-dengan-chat-action.html
+          *********************************************************************************************************/
+          kirimChatAction( chatid, "upload_document" );
+          
+          
+          var formData = {
+            method: "sendDocument",
+            chat_id: String(chatid),
+            document: filePDF,
+            caption: String( "NAME: " + fileName + " ~ MIME: " + fileMIME + " ~ ID: " + fileID ),
+            parse_mode: "HTML",
+            disable_content_type_detection: false
+          };
+          
+          var formOption = {
+            method: "post",
+            payload: formData
+          };
+
+          UrlFetchApp.fetch(telegramAPIURL + "/", formOption);
+
+        }
+
+      } else Logger.log( "FOLDER tidak mempunyai FILE" );
+
+
+    } else kirimPesan( chatid, "chat_id tidak terdapat dalam kiriman JSON." );
+  
+  } catch(e) {
+    kirimPesan( telegramAdminID, e );
+  }
+
+}
