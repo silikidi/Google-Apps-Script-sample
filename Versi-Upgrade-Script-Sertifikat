@@ -16,6 +16,13 @@ const sheet = SpreadsheetApp.openById( googleSheetID ).getSheetByName( googleShe
 const folder = DriveApp.getFolderById( googleFolderID );
 
 
+/*********************************************************************
+* Gunakan setelan setSharing bila ingin menyetel akses via script *
+**********************************************************************
+folder.setSharing( DriveApp.Access.ANYONE, DriveApp.Permission.VIEW );
+**********************************************************************/
+
+
 /***************************************************************
 * getMe() untuk request info tentang bot *
 * setWebHook() untuk membangun push system realtime dengan bot *
