@@ -1,0 +1,269 @@
+/**************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Mengirim Sertifikat Ke Telegram
+* https://telegram-bot-script.blogspot.com/2021/10/mengirim-sertifikat-ke-telegram.html
+***************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+const googleFolderID = "ID_FOLDER_SERTIFIKAT";
+const googleSlideID = "ID_GOOGLE_SLIDE";
+const googleSheetID = "ID_GOOGLE_SHEETS";
+const googleSheetNAME = "DATA-SERTIFIKAT";
+const slide = DriveApp.getFileById( googleSlideID ) ;
+const sheet = SpreadsheetApp.openById( googleSheetID ).getSheetByName( googleSheetNAME );
+const folder = DriveApp.getFolderById( googleFolderID );
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan, parseMode ) {
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: String( parseMode ),
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/*********************
+* FUNGSI STATUS CHAT *
+**********************/
+function kirimChatAction( chatID, action ) {
+  var dataAction = {
+    method: "post",
+    payload: {
+      method: "sendChatAction",
+      chat_id: String( chatID ),
+      action: String( action )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataAction );
+}
+
+
+/*********************************************
+* PENGIRIMAN DENGAN POST multipart/form-data *
+**********************************************/
+function kirimSertifikat( chatID, file ) {
+  
+  var formData = {
+    method: "sendDocument",
+    chat_id: String( chatID ),
+    document: file,
+    caption: "<b>AMAZING!</b> selamat atas pencapaiannya semoga tetap berprestasi di masa depan.",
+    parse_mode: "HTML",
+    disable_content_type_detection: false
+  };
+
+  var formOption = {
+    method: "post",
+    payload: formData
+  };
+  
+  UrlFetchApp.fetch( telegramAPIURL + "/", formOption );
+
+}
+
+
+/**************************************************************
+* FUNGSI PENCARIAN ARSIP SERTIFIKAT DI SUBFOLDER GOOGLE DRIVE *
+***************************************************************/
+function cariSertifikat( chatID, keywordPencarian ) {
+
+  var fileList = folder.getFilesByName( keywordPencarian );
+
+  if ( fileList.hasNext() ) {
+    
+    kirimPesan( chatID, "Proses membutuhkan waktu silahkan tunggu...", "HTML" );
+    kirimChatAction( chatID, "upload_document" );
+
+    /********************************************************
+    * Untuk menghindari duplikasi pengiriman
+    * Hanya file pertama saja yang dikirimkan
+    * Sehingga tidak digunakan iterasi While
+    *********************************************************
+    while ( fileList.hasNext() ) {
+      var file = fileList.next();
+      var filePDF = file.getAs( "application/pdf" );
+    }
+    *********************************************************/
+
+    /******************
+    * Konversi ke PDF * 
+    *******************/
+    var filePDF = fileList.next().getAs( "application/pdf" );
+
+    /************************
+    * Kirim PDF ke Telegram * 
+    *************************/
+    kirimSertifikat( chatID, filePDF );
+    kirimChatAction( chatID, "typing" );
+    kirimPesan( chatID, "Bila nama peserta belum tercantum dalam sertifikat silahkan ulangi kembali", "HTML" );
+
+  /********************************************
+  * Bila arsip tidak ada maka buat sertifikat * 
+  *********************************************/
+  } else cariPeserta( chatID, keywordPencarian );
+
+}
+
+
+/*************************************************
+* FUNGSI PENCARIAN DATA PESERTA DI GOOGLE SHEETS *
+**************************************************/
+function cariPeserta( chatID, keywordPencarian ) {
+
+  /*************************************************
+  * AREA PENCARIAN DATA DI KOLOM TUNGGAL NAMA SAJA *
+  **************************************************/
+  var dataCari = sheet
+    .getRange( 2, 1, sheet.getLastRow() )
+    .createTextFinder( keywordPencarian )
+    .matchEntireCell( false )
+    .matchCase( false )
+    .findAll();
+  
+  /********************************************************************************************
+  * BILA NAMA DITEMUKAN LANJUTKAN DENGAN ITERASI SEBAGAI ANTISIPASI BILA NAMA LEBIH DARI SATU *
+  *********************************************************************************************/
+  if ( dataCari.length > 0 ) {
+
+    var dataBaris = [];
+
+    for ( var i = 0; i < dataCari.length; i++ ) {
+      
+      /****************************************************************
+      * Isi dataBaris dengan data-data kolom dari baris data tersebut *
+      *****************************************************************/
+      dataBaris[i] = sheet.getRange( dataCari[i].getRow(), 1, 1, sheet.getLastColumn() ).getDisplayValues()[0];
+
+      /**************************************************************
+      * Tambahkan informasi tentang posisi baris di elemen terakhir *
+      ***************************************************************/
+      dataBaris[i].push( dataCari[i].getRow() );
+
+    }
+    
+    createCertificates( chatID, dataBaris );
+
+  } else kirimPesan( chatID, "Nama Peserta tidak terdaftar di database.", "HTML" );
+
+}
+
+
+/*********************************************************
+* FUNGSI PEMBUATAN SERTIFIKAT DARI TEMPLATE GOOGLE SLIDE *
+**********************************************************/
+function createCertificates( chatID, dataBaris ) {
+  
+  var headers = sheet.getRange( 1, 1, 1, sheet.getLastColumn() ).getDisplayValues()[0];
+
+  var empNameIndex = headers.indexOf( "Employee Name" );
+  var dateIndex = headers.indexOf( "Date" );
+  var managerNameIndex = headers.indexOf( "Manager Name" );
+  var titleIndex = headers.indexOf( "Title" );
+  var compNameIndex = headers.indexOf( "Company Name" );
+  var empSlideIndex = headers.indexOf( "Employee Slide" );
+  var statusIndex = headers.indexOf( "Status" );
+
+  kirimChatAction( chatID, "upload_document" );
+  kirimPesan( chatID, "Proses membutuhkan waktu silahkan tunggu...", "HTML" );
+  
+  for ( var i = 0; i < dataBaris.length; i++ ) {
+    
+    var rowData = dataBaris[i];
+    var empName = rowData[empNameIndex];
+    var date = rowData[dateIndex];
+    var managerName = rowData[managerNameIndex];
+    var title = rowData[titleIndex];
+    var compName = rowData[compNameIndex];
+    
+    var empSlideId = slide.makeCopy( folder ).setName( empName ).getId();
+    var empSlide = SlidesApp.openById( empSlideId ).getSlides()[0];
+    
+    empSlide.replaceAllText( "Employee Name", empName );
+    empSlide.replaceAllText( "Date", "Date: " + date );
+    empSlide.replaceAllText( "Your Name", managerName );
+    empSlide.replaceAllText( "Title", title );
+    empSlide.replaceAllText( "Company Name", compName );
+    
+    sheet.getRange( rowData[rowData.length - 1], empSlideIndex + 1 ).setValue(empSlideId);
+    sheet.getRange( rowData[rowData.length - 1], statusIndex + 1 ).setValue("CREATED");
+    SpreadsheetApp.flush();
+
+  }
+  
+  /***************************************************************************************
+  * Di sini terkadang createCertificates() lebih dulu diproses dari penulisan sertifikat *
+  * Google Apps Script belum mendukung pengendalian Asynchronous dengan Promise *
+  * Alternatif solusi gunakan Polyfill cPromisePolyfill:
+  * https://ramblings.mcpher.com/gassnippets2/using-es6-promises-server-side-in-apps-script/
+  * https://github.com/brucemcpherson/cPromisePolyfill/blob/master/getPolyfill.gs
+  ****************************************************************************************/
+  var filePDF = DriveApp.getFileById( empSlideId ).getAs( "application/pdf" );
+  kirimSertifikat( chatID, filePDF );
+  kirimChatAction( chatID, "typing" );
+  kirimPesan( chatID, "Bila nama peserta belum tercantum dalam sertifikat silahkan ulangi kembali", "HTML" );
+
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  var data = JSON.parse(e.postData.contents);
+  var chatID = data.message.chat.id;
+  var chatText = data.message.text;
+
+  try {
+    
+    if ( chatID ) {
+      if ( chatText ) {
+        
+        var cekCommand = chatText.substring(0, 11);
+
+        /************************************************************************************
+        * Periksa apakah properti text berisi command /sertifikat dan disertai nama peserta *
+        *************************************************************************************/
+        if ( 
+          cekCommand === "/sertifikat" 
+          && ( chatText.split(' ').length > 1 ) 
+          && ( chatText.split(' ')[1] !== "" ) 
+        ) {
+          
+          cariSertifikat( chatID, chatText.substring( cekCommand.length, chatText.length ).trim() );
+
+        } else kirimPesan( chatID, "Tulis dengan format yang benar: <b>/sertifikat nama_peserta</>", "HTML" );
+
+      } else kirimPesan( chatID, "text tidak terdapat dalam kiriman JSON", "HTML" );
+    } else kirimPesan( chatID, "chat_id tidak terdapat dalam kiriman JSON", "HTML" );
+  
+  } catch(e) { kirimPesan( telegramAdminID, e, "HTML" ); }
+
+}
