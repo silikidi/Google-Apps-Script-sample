@@ -1,0 +1,46 @@
+/*************************************************************************************************
+* Salin ke file Code.gs Apps Script
+* ZIP Folder Google Drive Dengan Apps Script
+* https://telegram-bot-script.blogspot.com/2021/10/zip-folder-google-drive-dengan-apps-script.html
+**************************************************************************************************/
+
+function zipFolder() {
+
+  var folderID = "ID_FOLDER_ANDA";
+  var folderAkses = DriveApp.getFolderById( folderID );
+  var folderName = folderAkses.getName();
+  
+  /*****************************************************************************
+  * Pastikan folder permission VIEW dan folder sharing access ANYONE_WITH_LINK *
+  ******************************************************************************/
+  if ( folderAkses.getSharingAccess() !== DriveApp.Access.ANYONE_WITH_LINK && folderAkses.getSharingPermission() !== DriveApp.Permission.VIEW ) {
+    folderAkses.setSharing( DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW );
+  }
+
+  var fileList = folderAkses.getFiles();
+  if ( fileList.hasNext() ) {
+      
+    var fileBLOB = [];
+    
+    while ( fileList.hasNext() ) { 
+      
+      var file = fileList.next();
+      
+      /*************************************************************************
+      * Cek dan hapus bila sudah ada ZIP sebelumnya dengan nama file yang sama * 
+      **************************************************************************/
+      if ( file.getName() === folderName + ".zip" ) {
+        file.setTrashed( true );
+      } else fileBLOB.push( file.getBlob() ); 
+
+    }
+    
+    var zipFile = Utilities.zip( fileBLOB, folderName + ".zip" );
+    var zipID = folderAkses.createFile( zipFile ).getId();
+    var zipURL = DriveApp.getFileById( zipID ).getUrl();
+
+    Logger.log( zipURL );
+
+  } else Logger.log( "Folder kosong!" );
+
+}
