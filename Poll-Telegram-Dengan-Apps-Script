@@ -1,0 +1,169 @@
+/***************************************************************************************
+* Salin ke file Code.gs Apps Script
+* Poll Telegram Dengan Apps Script
+* https://telegram-bot-script.blogspot.com/2021/10/poll-telegram-dengan-apps-script.html
+****************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan, parseMode ) {
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: String( parseMode ),
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  var data = JSON.parse( e.postData.contents );
+
+  try {
+    
+    const pollAnonymous = ["true","false"];
+    const pollType = ["regular","quiz"];
+    const pollMultiple = ["false","true"];
+    const jawabanPilihan = [ "RED", "GREEN", "BLUE" ];
+    const jawabanBenar = 2; //BLUE
+
+    var targetID = data.message ? data.message.chat.id : telegramAdminID;
+    var tipe = "message";
+    var pesan = "";
+
+    /******************************************
+    * CEK BILA KIRIMAN JAWABAN POLL ANONYMOUS *
+    *******************************************/
+    if ( data.poll ) {
+      
+      var dataOptions = data.poll.options;
+
+      if ( data.poll.type === "quiz" ) {
+        
+        var dataPenjelasan = data.poll.explanation ? "\n" + data.poll.explanation : "";
+        pesan = "Jawaban Benar: " + jawabanPilihan[ jawabanBenar ] + dataPenjelasan;
+        
+      } else {
+
+        pesan = "<b>" + "TOTAL :" + "</b>" + data.poll.total_voter_count + "\n";
+        for ( var i = 0; i < dataOptions.length; i++ ) {
+          pesan += "\n" + dataOptions[i].text + " : " + dataOptions[i].voter_count;
+        }
+
+      }
+
+
+    /**********************************************
+    * CEK BILA KIRIMAN JAWABAN POLL NON-ANONYMOUS *
+    ***********************************************/
+    } else if ( data.poll_answer ) {
+      
+      var dataUser = data.poll_answer.user;
+      var dataOptions = data.poll_answer.option_ids;
+
+      pesan = "@" + dataUser.username + " (" + dataOptions.length + ") : ";
+      
+      for ( var i = 0; i < dataOptions.length; i++ ) {
+        pesan += jawabanPilihan[ dataOptions[i] ];
+        if ( i < (dataOptions.length - 1) ) pesan += " dan ";
+      }
+
+    
+    /*********************************
+    * CEK BILA KIRIMAN PESAN COMMAND *
+    **********************************/
+    } else if ( data.message.text && data.message.text.substring(0,5) === "/poll" && /^\d+$/.test( data.message.text.substring(5,8) ) ) {
+      
+      tipe = "poll";
+
+    
+    /*****************************
+    * KIRIM PANDUAN COMMAND POLL *
+    ******************************/
+    } else {
+
+      pesan = 
+        "Untuk menampilkan poll gunakan command:" + "\n" + "\n"
+        + "/poll000 - Poll anonymous regular single answer" + "\n"
+        + "/poll001 - Poll anonymous regular multiple answer" + "\n"
+        + "/poll010 - Poll anonymous quiz single answer" + "\n"
+        + "/poll011 - Poll anonymous quiz multiple answer" + "\n"
+        + "/poll100 - Poll non anonymous regular single answer" + "\n"
+        + "/poll101 - Poll non anonymous regular multiple answer" + "\n"
+        + "/poll110 - Poll non anonymous quiz single answer" + "\n"
+        + "/poll111 - Poll non anonymous quiz multiple answer";
+
+    }
+
+    if ( tipe === "poll" ) {
+
+      var now = new Date();
+      now.setHours( now.getHours() + 1 );
+      pesan = data.message.text;
+      
+      var dataPoll = {
+        method: "post",
+        payload: {
+          method: "sendPoll",
+          chat_id: String( targetID ),
+          question: "Your favorite color",
+          options: JSON.stringify( jawabanPilihan ),
+          is_anonymous: pollAnonymous[ pesan.substring(5,6) ],
+          type: pollType[ pesan.substring(6,7) ],
+          allows_multiple_answers: pollMultiple[ pesan.substring(7,8) ],
+          correct_option_id: String( jawabanBenar ),
+          explanation: "Because <b>BLUE</b> is the color of <a href='https://telegram.org'>Telegram</a>.",
+          explanation_parse_mode: "HTML",
+          close_date: String( now.getTime() ) //atau gunakan close_date: Utilities.formatDate( now, Session.getScriptTimeZone(), "yyyy-MM-dd'T'HH:mm:ss'Z'" )
+        }
+      };
+      UrlFetchApp.fetch( telegramAPIURL + "/", dataPoll );
+
+    } else {
+      
+      var dataRespon = {
+        method: "post",
+        payload: {
+          method: "sendMessage",
+          chat_id: String( targetID ),
+          parse_mode: "HTML",
+          text: pesan
+        }
+      };
+      UrlFetchApp.fetch( telegramAPIURL + "/", dataRespon );
+      
+    }
+  
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+
+}
