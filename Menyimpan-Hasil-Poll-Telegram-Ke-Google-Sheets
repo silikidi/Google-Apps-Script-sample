@@ -23,9 +23,14 @@ function pollToSheets( pollData, pollSheet ) {
   
   const pollKeys = pollData[0];
   const pollValues = [ pollData[1] ];
-  const sheetID = "1eM0zrhyVGDTH6YXiqE6bD8-XyLwJWC5TfZvgMaHF7zw";
+  const sheetID = "ID_GOOGLE_SHEETS_ANDA";
   const sheetFile = SpreadsheetApp.openById( sheetID );
-  const sheetName = sheetFile.getSheetByName( pollSheet );
+  const sheetName = 
+    sheetFile.getSheetByName( pollSheet ) ?
+    sheetFile.getSheetByName( pollSheet ) :
+    sheetFile.insertSheet( pollSheet );
+    ;
+    
 
   /*******************
   * CEK JUDUL HEADER * 
@@ -39,6 +44,7 @@ function pollToSheets( pollData, pollSheet ) {
     }
 
   }
+  
   
   /************************
   * SIMPAN DATA KE SHEETS * 
