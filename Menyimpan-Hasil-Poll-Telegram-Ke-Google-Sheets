@@ -1,0 +1,49 @@
+/*************************************************************************************************************
+* FUNGSI MENYIMPAN KIRIMAN JAWABAN POLL KE GOOGLE SHEETS *
+* Artikel: Menyimpan Hasil Poll Telegram Ke Google Sheets
+* https://telegram-bot-script.blogspot.com/
+**************************************************************************************************************
+* pollData = array dua dimensi contoh: 
+[
+  [poll_id, id, is_bot, first_name, last_name, username, language_code, option_ids],
+  [6301080145537007634, 1821266651, false, RSUD CIBABAT, CIMAHI, rscibabat, en, RED-BLUE]
+]
+* pollSheet = string nama sheet target
+* contoh eksekusi melibatkan fungsi scanJSONPoll:
+savePoll2Sheets( scanJSONPoll( JSON.parse( e.postData.contents ).[nama_properti_induk] ), [nama_sheet] );
+savePoll2Sheets( scanJSONPoll( data.poll_answer ), "USER-BASED" );
+savePoll2Sheets( scanJSONPoll( data.poll ), "ANONYMOUS" );
+* Fungsi scanJSONPoll() dapat dilihat di:
+* https://github.com/silikidi/Google-Apps-Script-sample/blob/main/JSON-Poll-Answer-Telegram-Dengan-Apps-Script
+* Contoh Google Sheets:
+* https://docs.google.com/spreadsheets/d/1eM0zrhyVGDTH6YXiqE6bD8-XyLwJWC5TfZvgMaHF7zw/edit?usp=sharing
+**************************************************************************************************************/
+
+function pollToSheets( pollData, pollSheet ) {
+  
+  const pollKeys = pollData[0];
+  const pollValues = [ pollData[1] ];
+  const sheetID = "1eM0zrhyVGDTH6YXiqE6bD8-XyLwJWC5TfZvgMaHF7zw";
+  const sheetFile = SpreadsheetApp.openById( sheetID );
+  const sheetName = sheetFile.getSheetByName( pollSheet );
+
+  /*******************
+  * CEK JUDUL HEADER * 
+  ********************/
+  if ( pollKeys.length > 0 ) {
+    
+    for ( let [index, element] of sheetName.getRange( 1, 1, 1, pollKeys.length ).getValues()[0].entries() ){
+      if ( !element ) {
+        sheetName.getRange( 1, index + 1 ).setValue( pollKeys[index] );
+      }
+    }
+
+  }
+  
+  /************************
+  * SIMPAN DATA KE SHEETS * 
+  *************************/
+  let sheetData = sheetName.getRange( sheetName.getLastRow() + 1, 1, 1, pollValues[0].length );
+  sheetData.setValues( pollValues );
+
+}
