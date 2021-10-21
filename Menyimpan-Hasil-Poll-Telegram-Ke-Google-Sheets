@@ -29,7 +29,6 @@ function pollToSheets( pollData, pollSheet ) {
     sheetFile.getSheetByName( pollSheet ) ?
     sheetFile.getSheetByName( pollSheet ) :
     sheetFile.insertSheet( pollSheet );
-    ;
     
 
   /*******************
