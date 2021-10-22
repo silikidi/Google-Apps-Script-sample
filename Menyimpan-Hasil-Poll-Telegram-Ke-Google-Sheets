@@ -10,6 +10,9 @@ const googleWebAppsURL = "URL_WEB_APPS_ANDA";
 const googleSheetID = "ID_GOOGLE_SHEETS_ANDA";
 const googleSheetFile = SpreadsheetApp.openById( googleSheetID );
 
+const googleSheetDashboard = "URL_PUBLISH_SHEETS_KHUSUS_DASHBOARD";
+const googleSheetDashboardPDF = googleSheetDashboard + "&output=pdf";
+
 const pollAnonymous = ["true","false"];
 const pollType = ["regular","quiz"];
 const pollMultiple = ["false","true"];
@@ -204,7 +207,10 @@ function doPost(e) {
       var targetID = ( data.poll.question ).match(/\[(.*)\]/).pop();
 
       pollToSheets( scanJSONPoll( data.poll ), "ANONYMOUS" );
-      pesan = "Data poll berhasil disimpan di Google Sheets!";
+      pesan =
+        "<b>Data poll berhasil disimpan di Google Sheets!</b>" + "\n"
+        + "\n" + "Lihat <a href='" + googleSheetDashboard + "'><b>ONLINE</b></a>"
+        + " atau unduh <a href='" + googleSheetDashboardPDF + "'><b>PDF</b></a>" + "\n";
 
       const dataOptions = data.poll.options;
 
@@ -227,7 +233,10 @@ function doPost(e) {
       var targetID = data.poll_answer.user.id;
 
       pollToSheets( scanJSONPoll( data.poll_answer ), "USER-BASED" );
-      pesan = "Data poll berhasil disimpan di Google Sheets!" + "\n";
+      pesan =
+        "<b>Data poll berhasil disimpan di Google Sheets!</b>" + "\n"
+        + "\n" + "Lihat <a href='" + googleSheetDashboard + "'><b>ONLINE</b></a>"
+        + " atau unduh <a href='" + googleSheetDashboardPDF + "'><b>PDF</b></a>" + "\n";
 
       const dataUser = data.poll_answer.user;
       const dataOptionIDS = data.poll_answer.option_ids;
