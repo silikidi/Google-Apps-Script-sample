@@ -1,0 +1,37 @@
+/******************************************************************************************
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+* Base64url Encode Dengan Apps Script
+* https://telegram-bot-script.blogspot.com/2021/10/base64url-encode-dengan-apps-script.html
+*******************************************************************************************/
+
+/*******************************
+* ENCODE DECODE BASE64 WEBSAFE *
+********************************/
+function konversiBase64(base64Opsi, base64Data) {
+  let base64Hasil = "Failed! sertakan data yang akan di <b>ENCODE/DECODE</b>";
+  if ( base64Opsi && base64Opsi !== "" ) {
+    if ( base64Opsi.toUpperCase() === "ENCODE" ) {
+      
+      base64Hasil = Utilities.base64EncodeWebSafe( base64Data );
+
+    } else if ( base64Opsi.toUpperCase() === "DECODE" ) {
+
+      base64Decode = Utilities.base64DecodeWebSafe( base64Data );
+      base64Hasil = Utilities.newBlob( base64Decode ).getDataAsString();
+
+    } else base64Hasil = "Failed! pilih opsi <b>ENCODE</b> atau <b>DECODE</b>";
+
+  }
+  return base64Hasil;
+}
+
+
+/*********
+* TESTER *
+**********/
+function tesKonversiBase64(){
+  let original = "The Power of Blank.pdf";
+  Logger.log( "ORIGINAL : " + original );
+  Logger.log( "BASE64WEBSAFE-ENCODE : " + konversiBase64( "encode", original ) );
+  Logger.log( "BASE64WEBSAFE-DECODE : " + konversiBase64( "decode", konversiBase64( "encode", original ) ) );
+}
