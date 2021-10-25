@@ -161,7 +161,7 @@ function doPost(e) {
 
             if ( !ekstrakParameter( parameterDecode ) ) {
               
-              pesan = "Parameter tidak sesuai format parameter URL!";
+              pesan = "<b>" + dataText + "</b>" + " [format parameter non-URL]";
 
             } else {
               
@@ -178,7 +178,7 @@ function doPost(e) {
 
             }
             
-          } else pesan = "Parameter bukan hasil enkoding Base64!";
+          } else pesan = "<b>" + dataText + "</b>" + " [parameter non-Base64]";
         }
       }
 
