@@ -1,0 +1,287 @@
+/*****************************************************************************************************************
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+* Multi Parameter Deep Linking Telegram Dengan URL Shortener
+* https://telegram-bot-script.blogspot.com/2021/10/multi-parameter-deep-linking-telegram-dengan-url-shortener.html
+******************************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  var url = telegramAPIURL + "/getMe";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function deleteWebhook() {
+  var url = telegramAPIURL + "/deleteWebhook";
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+  var dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+}
+
+
+/*****************************************************************************************************
+* MEMBUAT SATU BARIS QUERY PARAMETER DARI GOOGLE SHEETS *
+* Template Google Sheets untuk bahan praktikum dapat di unduh:
+* https://docs.google.com/spreadsheets/d/1iXVBFfjcCudH4nzQ9oVfBlpdmOiIUnPBEhNVZNWYvh0/edit?usp=sharing
+******************************************************************************************************/
+function parameterFromSheet() {
+
+  const sheetID = "ID_GOOGLE_SHEETS_ANDA";
+  const sheetName = "PARAMETER";
+  const sheetFile = SpreadsheetApp.openById( sheetID );
+  const sheetList = sheetFile.getSheetByName( sheetName );
+  const sheetHeaders = sheetList.getRange( 1, 1, 1, sheetList.getLastColumn() ).getDisplayValues()[0];
+  const sheetRowRandom = Math.floor( Math.random() * (sheetList.getLastRow() - 2 + 1) ) + 2;
+  const sheetRowData = sheetList.getRange( sheetRowRandom, 1, 1, sheetList.getLastColumn() ).getDisplayValues()[0];
+  
+  var parameter = "";
+  
+  for ( let i = 0; i < sheetHeaders.length; i++ ) {
+    parameter += sheetHeaders[i] + "=" + sheetRowData[i];
+    parameter += i < sheetHeaders.length - 1 ? "&" : ""; 
+  }
+
+  Logger.log( "https://example.com/?" + encodeURIComponent( parameter ) );
+
+}
+
+
+/*******************************
+* ENCODE DECODE BASE64 WEBSAFE *
+********************************/
+function konversiBase64( base64Opsi, base64Data ) {
+  
+  var base64Hasil = "";
+
+  if ( base64Opsi && base64Opsi !== "" ) {
+    if ( base64Opsi.toUpperCase() === "ENCODE" ) {
+      
+      base64Hasil = Utilities.base64EncodeWebSafe( base64Data );
+
+    } else if ( base64Opsi.toUpperCase() === "DECODE" ) {
+
+      /***** https://stackoverflow.com/a/35002237/12682081 *****/
+      var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+
+      if ( base64regex.test( base64Data ) ) {
+        
+        var base64Decode = Utilities.base64DecodeWebSafe( base64Data );
+        base64Hasil = Utilities.newBlob( base64Decode ).getDataAsString();
+
+      }
+
+    }
+  } 
+
+  return base64Hasil;
+
+}
+
+
+/***********************************
+* EKSTRAK PARAMETER KE DALAM OBJEK *
+************************************/
+function ekstrakParameter( parameter ) {
+  
+  if ( parameter.includes( "&" ) && parameter.includes( "=" ) ){
+    
+    let parameterSplit = parameter.split( "&" );
+    let parameterObjek = {};
+
+    for ( let i = 0; i < parameterSplit.length; i++ ) {
+      let parameterPart = parameterSplit[i].split( "=" );
+      parameterObjek[ parameterPart[0] ] = parameterPart[1];
+    }
+
+    return parameterObjek;
+
+  } else return false;
+
+}
+
+
+/***************************************************************
+* EKSTRAK QUERY PARAMETER DARI URL DAN KONVERSI KE DALAM OBJEK *
+****************************************************************/
+function extractLinkToObject( url ) {
+  
+  if ( url.includes( "?" ) ){
+
+    var parameter = decodeURIComponent( url.split( "?" )[1] );
+
+    if ( parameter.includes( "&" ) && parameter.includes( "=" ) ){
+      
+      let parameterSplit = parameter.split( "&" );
+      let parameterObjek = {};
+
+      for ( let i = 0; i < parameterSplit.length; i++ ) {
+        let parameterPart = parameterSplit[i].split( "=" );
+        parameterObjek[ parameterPart[0] ] = parameterPart[1];
+      }
+
+      return parameterObjek;
+
+    } else return false;
+
+  } else return false;
+
+}
+
+
+/**********************************************
+* GET REDIRECTION FROM SHORTENER *
+* https://stackoverflow.com/a/50733029/12682081
+***********************************************/
+function getRedirect( url ) {
+
+  try {
+    
+    let response = UrlFetchApp.fetch( url, { "followRedirects": false, "muteHttpExceptions": false } );
+    let redirectURL = response.getHeaders()["Location"];
+    //let responseCode = response.getResponseCode();
+
+    if ( redirectURL ) {
+    
+      let redirectURLNEXT = getRedirect( redirectURL );
+      //Logger.log( url + "\n\n" + "is redirecting to" + "\n\n" + redirectURL + ". (" + responseCode + ")" );
+      return redirectURLNEXT;
+
+    } else {
+      
+      //Logger.log(url + " is canonical. (" + responseCode + ")");
+      return url;
+
+    }
+
+  } catch(e) {
+    return false;
+  }
+
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  const data = JSON.parse( e.postData.contents );
+
+  try {      
+
+    if ( (( data || {} ).message || {}).text ){
+        
+      var pesan =
+        "<b>" + "TIDAK ADA PARAMETER TERDETEKSI " + "</b>" + "\n" + "\n"
+        + "Private Chat gunakan link berikut: " + "\n"
+        + "<a href='https://t.me/pertamakubot?start=AloHaloOo'>t.me/pertamakubot?start=AloHaloOo</a>" + "\n" + "\n"
+        + "Group Chat pilih atau ketik command: " + "\n" + "/startalohalooo@pertamakubot";
+
+      if ( data.message.text.substring(0, 6) === "/start" && data.message.text.match(/\/start(.*)/).pop() !== "" ) {
+      
+        var dataText = data.message.text.match(/\/start(.*)/).pop().trim();
+        //var dataText = data.message.text.toLowerCase().match(/\/start(.*)/).pop().trim();
+        
+        if ( dataText.includes( "@" ) ) {
+          
+          if ( dataText.split( "@" ).shift() !== "" ) pesan = "Parameter Command [GROUP]: " + "<b>" + dataText.split( "@" ).shift()+ "</b>";
+
+        } else {
+          
+          const botUsername = "pertamakubot";
+
+          if ( konversiBase64( "decode", dataText ) !== "" ) {
+            
+            let parameterDecode = konversiBase64( "decode", dataText );
+
+            if ( !ekstrakParameter( parameterDecode ) ) {
+              
+              pesan = "<b>" + dataText + "</b>" + " [format parameter non-URL]";
+
+            } else {
+              
+              let parameterObjek = ekstrakParameter( parameterDecode );
+              
+              pesan = 
+                "URL: " + "\n" + "https://t.me/" + botUsername + "?start=" + dataText + "\n" + "\n"
+                + "PARAMETER: " + "\n" + "<b>" + dataText + "</b>" + "\n" + "\n"
+                + "HASIL KONVERSI: ";
+
+              for ( let [key, value] of Object.entries( parameterObjek ) ) {
+                pesan += "\n" + `${key}: <b>${value}</b>`;
+              }
+
+            }
+            
+          } else {
+            
+            let shortURL = "https://tinyurl.com/" + dataText;
+            
+            if ( getRedirect( shortURL ) !== false ) {
+              
+              var parameterRedirect = getRedirect( shortURL );
+
+              if ( extractLinkToObject( parameterRedirect ) !== false ){
+                
+                var parameterObjek = extractLinkToObject( parameterRedirect );
+              
+                pesan = 
+                  "<b>" + "DEEP LINKING:" + "</b>" + "\n" + "https://t.me/" + botUsername + "?start=" + dataText + "\n" + "\n"
+                  + "<b>" + "DATA PARAMETER:" + "</b>"; 
+
+                for ( let [key, value] of Object.entries( parameterObjek ) ) {
+                  pesan += "\n" + "<b>" + key + ": " + "</b>" + value;
+                }
+
+              } else pesan = "<b>" + dataText + "</b>" + " bukan Query Parameter URL!";
+
+            } else pesan = "<b>" + dataText + "</b>" + " bukan parameter Base64 ataupun Query Parameter URL!";
+
+          }
+        }
+      }
+
+      var dataParameter = {
+        method: "post",
+        payload: {
+          method: "sendMessage",
+          chat_id: String( data.message.chat.id ),
+          parse_mode: "HTML",
+          disable_web_page_preview: "true",
+          text: String( pesan )
+        }
+      };
+      UrlFetchApp.fetch( telegramAPIURL + "/", dataParameter );
+
+    }
+  
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+
+}
