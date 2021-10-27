@@ -47,7 +47,7 @@ function kirimPesan( targetID, pesan ) {
 
 
 /*****************************************************************************************************
-* MEMBUAT SATU BARIS QUERY PARAMETER DARI GOOGLE SHEETS *
+* MEMBUAT SATU BARIS QUERY PARAMETER DARI GOOGLE SHEETS SECARA MANUAL *
 * Template Google Sheets untuk bahan praktikum dapat di unduh:
 * https://docs.google.com/spreadsheets/d/1iXVBFfjcCudH4nzQ9oVfBlpdmOiIUnPBEhNVZNWYvh0/edit?usp=sharing
 ******************************************************************************************************/
@@ -73,85 +73,27 @@ function parameterFromSheet() {
 }
 
 
-/*******************************
-* ENCODE DECODE BASE64 WEBSAFE *
-********************************/
-function konversiBase64( base64Opsi, base64Data ) {
-  
-  var base64Hasil = "";
-
-  if ( base64Opsi && base64Opsi !== "" ) {
-    if ( base64Opsi.toUpperCase() === "ENCODE" ) {
-      
-      base64Hasil = Utilities.base64EncodeWebSafe( base64Data );
-
-    } else if ( base64Opsi.toUpperCase() === "DECODE" ) {
-
-      /***** https://stackoverflow.com/a/35002237/12682081 *****/
-      var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-
-      if ( base64regex.test( base64Data ) ) {
-        
-        var base64Decode = Utilities.base64DecodeWebSafe( base64Data );
-        base64Hasil = Utilities.newBlob( base64Decode ).getDataAsString();
-
-      }
-
-    }
-  } 
-
-  return base64Hasil;
-
+/************************
+* DECODE BASE64 WEBSAFE *
+*************************/
+function base64DWS( base64Data ) {
+  return Utilities.newBlob( Utilities.base64DecodeWebSafe( base64Data, Utilities.Charset.UTF_8 ) ).getDataAsString();
 }
 
 
 /***********************************
 * EKSTRAK PARAMETER KE DALAM OBJEK *
 ************************************/
-function ekstrakParameter( parameter ) {
-  
+function parameterExtract( parameter ) {
   if ( parameter.includes( "&" ) && parameter.includes( "=" ) ){
-    
     let parameterSplit = parameter.split( "&" );
     let parameterObjek = {};
-
     for ( let i = 0; i < parameterSplit.length; i++ ) {
       let parameterPart = parameterSplit[i].split( "=" );
       parameterObjek[ parameterPart[0] ] = parameterPart[1];
     }
-
     return parameterObjek;
-
-  } else return false;
-
-}
-
-
-/***************************************************************
-* EKSTRAK QUERY PARAMETER DARI URL DAN KONVERSI KE DALAM OBJEK *
-****************************************************************/
-function extractLinkToObject( url ) {
-  
-  if ( url.includes( "?" ) ){
-
-    var parameter = decodeURIComponent( url.split( "?" )[1] );
-
-    if ( parameter.includes( "&" ) && parameter.includes( "=" ) ){
-      
-      let parameterSplit = parameter.split( "&" );
-      let parameterObjek = {};
-
-      for ( let i = 0; i < parameterSplit.length; i++ ) {
-        let parameterPart = parameterSplit[i].split( "=" );
-        parameterObjek[ parameterPart[0] ] = parameterPart[1];
-      }
-
-      return parameterObjek;
-
-    } else return false;
-
-  } else return false;
-
+  } else return "";
 }
 
 
@@ -160,30 +102,38 @@ function extractLinkToObject( url ) {
 * https://stackoverflow.com/a/50733029/12682081
 ***********************************************/
 function getRedirect( url ) {
-
   try {
-    
     let response = UrlFetchApp.fetch( url, { "followRedirects": false, "muteHttpExceptions": false } );
     let redirectURL = response.getHeaders()["Location"];
     //let responseCode = response.getResponseCode();
-
     if ( redirectURL ) {
-    
       let redirectURLNEXT = getRedirect( redirectURL );
       //Logger.log( url + "\n\n" + "is redirecting to" + "\n\n" + redirectURL + ". (" + responseCode + ")" );
       return redirectURLNEXT;
-
     } else {
-      
       //Logger.log(url + " is canonical. (" + responseCode + ")");
       return url;
-
     }
+  } catch(e) { return false; }
+}
 
-  } catch(e) {
-    return false;
-  }
 
+/***************************************************************
+* EKSTRAK QUERY PARAMETER DARI URL DAN KONVERSI KE DALAM OBJEK *
+****************************************************************/
+function extractLinkToObject( url ) {
+  if ( url.includes( "?" ) ){
+    var parameter = decodeURIComponent( url.split( "?" )[1] );
+    if ( parameter.includes( "&" ) && parameter.includes( "=" ) ){
+      let parameterSplit = parameter.split( "&" );
+      let parameterObjek = {};
+      for ( let i = 0; i < parameterSplit.length; i++ ) {
+        let parameterPart = parameterSplit[i].split( "=" );
+        parameterObjek[ parameterPart[0] ] = parameterPart[1];
+      }
+      return parameterObjek;
+    } else return false;
+  } else return false;
 }
 
 
@@ -193,9 +143,12 @@ function getRedirect( url ) {
 function doPost(e) {
 
   const data = JSON.parse( e.postData.contents );
+  const botUsername = "USERNAME_BOT_ANDA";
+  const shortener = "https://tinyurl.com/"; /***** CONTOH DOMAIN URL SHORTENER DENGAN TINYURL *****/
 
   try {      
 
+    /***** COMMAND BOT DAN PARAMETER DEEP LINK SELALU BERADA DALAM PROPERTI message.text *****/
     if ( (( data || {} ).message || {}).text ){
         
       var pesan =
@@ -204,70 +157,82 @@ function doPost(e) {
         + "<a href='https://t.me/pertamakubot?start=AloHaloOo'>t.me/pertamakubot?start=AloHaloOo</a>" + "\n" + "\n"
         + "Group Chat pilih atau ketik command: " + "\n" + "/startalohalooo@pertamakubot";
 
+      /***** SEKALIPUN VIA URL TETAP OLEH TELEGRAM DILEWATKAN VIA COMMAND /START *****/
       if ( data.message.text.substring(0, 6) === "/start" && data.message.text.match(/\/start(.*)/).pop() !== "" ) {
-      
-        var dataText = data.message.text.match(/\/start(.*)/).pop().trim();
-        //var dataText = data.message.text.toLowerCase().match(/\/start(.*)/).pop().trim();
         
+        /***** PISAHKAN PARAMETER DARI COMMAND /START *****/
+        var dataText = data.message.text.match(/\/start(.*)/).pop().trim();
+        
+        /***** CEK BILA COMMAND GROUP CHAT *****/
         if ( dataText.includes( "@" ) ) {
           
-          if ( dataText.split( "@" ).shift() !== "" ) pesan = "Parameter Command [GROUP]: " + "<b>" + dataText.split( "@" ).shift()+ "</b>";
+          pesan = "<b>" + dataText.split( "@" )[0] + "</b>";
+          pesan += dataText.split( "@" ).shift() !== "" ? " [parameter Command Group Chat]" : " [parameter Command Private Chat]";
 
         } else {
           
-          const botUsername = "pertamakubot";
+          /***** CEK BILA SHORTLINK *****/
+          let shortURL = shortener + dataText;
+          let shortRedirect = getRedirect( shortURL );
+          if ( shortRedirect !== false ) {
+            let parameterObject = extractLinkToObject( shortRedirect );
+            if ( parameterObject !== false ){
+              let shortRedirectSplit = shortRedirect.split( "?" );
 
-          if ( konversiBase64( "decode", dataText ) !== "" ) {
-            
-            let parameterDecode = konversiBase64( "decode", dataText );
-
-            if ( !ekstrakParameter( parameterDecode ) ) {
-              
-              pesan = "<b>" + dataText + "</b>" + " [format parameter non-URL]";
-
-            } else {
-              
-              let parameterObjek = ekstrakParameter( parameterDecode );
-              
               pesan = 
-                "URL: " + "\n" + "https://t.me/" + botUsername + "?start=" + dataText + "\n" + "\n"
-                + "PARAMETER: " + "\n" + "<b>" + dataText + "</b>" + "\n" + "\n"
-                + "HASIL KONVERSI: ";
+                "<b>" + "DEEP LINKING:" + "</b>" + "\n" + "https://t.me/" + botUsername + "?start=" + dataText + "\n" + "\n"
+                + "<b>" + "URL SHORTENER:" + "</b>" + "\n" + shortURL + "\n" + "\n"
+                + "<b>" + "URL REDIRECT:" + "</b>" + "\n" + shortRedirect + "\n" + "\n"
+                + "<b>" + "QUERY PARAMETER:" + "</b>" + "\n" + shortRedirectSplit[1] + "\n" + "\n"
+                + "<b>" + "DATA PARAMETER:" + "</b>"; 
 
-              for ( let [key, value] of Object.entries( parameterObjek ) ) {
-                pesan += "\n" + `${key}: <b>${value}</b>`;
+              for ( let [key, value] of Object.entries( parameterObject ) ) {
+                pesan += "\n" + "<b>" + key + ": " + "</b>" + value;
+                //Logger.log( `${key}: ${value}` );
               }
 
-            }
-            
-          } else {
-            
-            let shortURL = "https://tinyurl.com/" + dataText;
-            
-            if ( getRedirect( shortURL ) !== false ) {
-              
-              var parameterRedirect = getRedirect( shortURL );
+            } else pesan = "<b>" + dataText + "</b>" + " [shortlink Non Parameter]";
 
-              if ( extractLinkToObject( parameterRedirect ) !== false ){
-                
-                var parameterObjek = extractLinkToObject( parameterRedirect );
+          } else {
+
+            /**********************************************
+            * CEK VALIDITAS BASE64 *
+            * https://stackoverflow.com/a/29275028/12682081
+            ***********************************************/
+            let regex = '(?:[A-Za-z0-9+\/]{4}\\n?)*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)';
+            let base64regex = new RegExp("(?:^" + regex + "$)"); //exact
+            //let base64regex = new RegExp("(?:^|\\s)" + regex, "g");
+            if ( base64regex.test( dataText ) ) {
+              let parameterDecode = base64DWS( dataText );
+              let parameterObject = parameterExtract( parameterDecode );
+              if ( parameterObject !== "" ) {
               
                 pesan = 
-                  "<b>" + "DEEP LINKING:" + "</b>" + "\n" + "https://t.me/" + botUsername + "?start=" + dataText + "\n" + "\n"
-                  + "<b>" + "DATA PARAMETER:" + "</b>"; 
+                  "URL: " + "\n" + "https://t.me/" + botUsername + "?start=" + dataText + "\n" + "\n"
+                  + "PARAMETER: " + "\n" + "<b>" + dataText + "</b>" + "\n" + "\n"
+                  + "HASIL KONVERSI: ";
 
-                for ( let [key, value] of Object.entries( parameterObjek ) ) {
-                  pesan += "\n" + "<b>" + key + ": " + "</b>" + value;
+                for ( let [key, value] of Object.entries( parameterObject ) ) {
+                  pesan += "\n" + `${key}: <b>${value}</b>`;
                 }
 
-              } else pesan = "<b>" + dataText + "</b>" + " bukan Query Parameter URL!";
-
-            } else pesan = "<b>" + dataText + "</b>" + " bukan parameter Base64 ataupun Query Parameter URL!";
-
+              } else {
+                
+                pesan = 
+                  "Parameter Base64 Non Query URL:" + "\n"
+                  + "<b>" + dataText + "</b>" + "\n" + "\n"
+                  + "Hasil Dekoding Base64:" +  "\n"
+                  + "<b>" + parameterDecode + "</b>";
+                
+              }
+            } else pesan = "<b>" + dataText + "</b>" + " [parameter Non Shortlink dan Non Base64]";
           }
         }
       }
 
+      /********************************************
+      * KIRIM HASILNYA KE USER BERUPA PESAN BALIK *
+      *********************************************/
       var dataParameter = {
         method: "post",
         payload: {
