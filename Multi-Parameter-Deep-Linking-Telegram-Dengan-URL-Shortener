@@ -14,19 +14,19 @@ const googleWebAppsURL = "URL_WEB_APPS_ANDA";
 * setWebHook() untuk membangun push system realtime dengan bot *
 ****************************************************************/
 function getMe() {
-  var url = telegramAPIURL + "/getMe";
-  var response = UrlFetchApp.fetch(url);
-  Logger.log(response.getContentText());
+  let url = telegramAPIURL + "/getMe";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
 }
 function setWebhook() {
-  var url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
-  var response = UrlFetchApp.fetch(url);
-  Logger.log(response.getContentText());
+  let url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
 }
 function deleteWebhook() {
-  var url = telegramAPIURL + "/deleteWebhook";
-  var response = UrlFetchApp.fetch(url);
-  Logger.log(response.getContentText());
+  let url = telegramAPIURL + "/deleteWebhook";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
 }
 
 
@@ -34,7 +34,7 @@ function deleteWebhook() {
 * FUNGSI KIRIM PESAN *
 **********************/
 function kirimPesan( targetID, pesan ) {
-  var dataPesan = {
+  let dataPesan = {
     method: "post",
     payload: {
       method: "sendMessage",
@@ -42,7 +42,7 @@ function kirimPesan( targetID, pesan ) {
       text: String( pesan )
     }
   };
-  UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
 }
 
 
@@ -61,7 +61,7 @@ function parameterFromSheet() {
   const sheetRowRandom = Math.floor( Math.random() * (sheetList.getLastRow() - 2 + 1) ) + 2;
   const sheetRowData = sheetList.getRange( sheetRowRandom, 1, 1, sheetList.getLastColumn() ).getDisplayValues()[0];
   
-  var parameter = "";
+  let parameter = "";
   
   for ( let i = 0; i < sheetHeaders.length; i++ ) {
     parameter += sheetHeaders[i] + "=" + sheetRowData[i];
@@ -69,7 +69,6 @@ function parameterFromSheet() {
   }
 
   Logger.log( "https://example.com/?" + encodeURIComponent( parameter ) );
-
 }
 
 
@@ -123,7 +122,7 @@ function getRedirect( url ) {
 ****************************************************************/
 function extractLinkToObject( url ) {
   if ( url.includes( "?" ) ){
-    var parameter = decodeURIComponent( url.split( "?" )[1] );
+    let parameter = decodeURIComponent( url.split( "?" )[1] );
     if ( parameter.includes( "&" ) && parameter.includes( "=" ) ){
       let parameterSplit = parameter.split( "&" );
       let parameterObjek = {};
@@ -151,7 +150,7 @@ function doPost(e) {
     /***** COMMAND BOT DAN PARAMETER DEEP LINK SELALU BERADA DALAM PROPERTI message.text *****/
     if ( (( data || {} ).message || {}).text ){
         
-      var pesan =
+      let pesan =
         "<b>" + "TIDAK ADA PARAMETER TERDETEKSI " + "</b>" + "\n" + "\n"
         + "Private Chat gunakan link berikut: " + "\n"
         + "<a href='https://t.me/pertamakubot?start=AloHaloOo'>t.me/pertamakubot?start=AloHaloOo</a>" + "\n" + "\n"
@@ -161,7 +160,7 @@ function doPost(e) {
       if ( data.message.text.substring(0, 6) === "/start" && data.message.text.match(/\/start(.*)/).pop() !== "" ) {
         
         /***** PISAHKAN PARAMETER DARI COMMAND /START *****/
-        var dataText = data.message.text.match(/\/start(.*)/).pop().trim();
+        let dataText = data.message.text.match(/\/start(.*)/).pop().trim();
         
         /***** CEK BILA COMMAND GROUP CHAT *****/
         if ( dataText.includes( "@" ) ) {
@@ -218,9 +217,13 @@ function doPost(e) {
 
               } else {
                 
-                pesan = 
-                  "Parameter Base64 Non Query URL:" + "\n"
-                  + "<b>" + dataText + "</b>" + "\n" + "\n"
+                pesan =
+                  ( parameterDecode.includes( "&" ) && parameterDecode.includes( "=" ) )
+                  ? "Parameter Base64 Query URL:"
+                  : "Parameter Base64 Non Query URL:";
+                
+                pesan += 
+                  "\n" + "<b>" + dataText + "</b>" + "\n" + "\n"
                   + "Hasil Dekoding Base64:" +  "\n"
                   + "<b>" + parameterDecode + "</b>";
                 
@@ -233,7 +236,7 @@ function doPost(e) {
       /********************************************
       * KIRIM HASILNYA KE USER BERUPA PESAN BALIK *
       *********************************************/
-      var dataParameter = {
+      let dataParameter = {
         method: "post",
         payload: {
           method: "sendMessage",
