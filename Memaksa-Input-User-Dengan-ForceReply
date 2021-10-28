@@ -1,0 +1,192 @@
+/******************************************************************************************
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+* Memaksa Input User dengan ForceReply di Telegram
+* 
+*******************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ADMIN";
+const telegramBotID = "ID_BOT";
+const telegramBotUsername = "USERNAME_BOT_ANDA";
+
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+const googleSheetID = "ID_GOOGLE_SHEETS_ANDA";
+const googleSheetFile = SpreadsheetApp.openById( googleSheetID );
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+* deleteWebhook() menghapus koneksi yang dibangun setWebhook *
+****************************************************************/
+function getMe() {
+  let url = telegramAPIURL + "/getMe";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function setWebhook() {
+  let url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function deleteWebhook() {
+  let url = telegramAPIURL + "/deleteWebhook";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+  let dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/*********************************
+* KIRIM NOTIFIKASI STATUS PROSES *
+**********************************/
+function kirimChatAction( chatid, action ) {
+  var dataAction = {
+    method: "post",
+    payload: {
+      method: "sendChatAction",
+      chat_id: String( chatid ),
+      action: action
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataAction );
+}
+
+
+/*************
+* FORCEREPLY *
+**************/
+function forceReply( chatid, pertanyaan ) {
+  let dataReply = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: "HTML",
+      chat_id: String( chatid ),
+      text: pertanyaan,
+      reply_markup: JSON.stringify({
+        "force_reply": true
+      })
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataReply );
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  const data = JSON.parse( e.postData.contents );
+
+  try {
+
+    if ( ( data || {} ).message ){
+
+      if ( data.message.text === "/forcereply" ) {
+
+        forceReply( data.message.chat.id, "Halo... Sebutkan nama anda" );
+
+      } else {
+        
+        let pesan = "Gunakan Menu command untuk demo";
+        
+        /*************************************************
+        * CEK BILA JAWABAN DARI USER TERHADAP FORCEREPLY *
+        **************************************************/
+        if ( data.message.reply_to_message ) {
+
+          const reply = data.message.reply_to_message;
+
+          if ( reply.from.is_bot && ( String( reply.from.id ) === telegramBotID ) && ( reply.from.username === telegramBotUsername ) ) {
+            
+            /****************************************
+            * TAMPUNG DATA SEMENTARA KE DALAM OBJEK *
+            *****************************************/
+            let datareply = {};
+            
+            datareply[ "idchat" ] = String( data.message.chat.id );
+            datareply[ "tanggal" ] = new Date( reply.date * 1000 );
+            datareply[ "dijawab" ] = new Date( data.message.date * 1000 );
+            datareply[ "pertanyaan" ] = reply.text;
+            datareply[ "jawaban" ] = data.message.text;
+            datareply[ "iduser" ] = String( data.message.from.id );
+            datareply[ "username" ] = data.message.from.username;
+            datareply[ "nama" ] = data.message.from.first_name;
+            
+            /****************************************
+            * BUAT NOTIFIKASI ATAU FEEDBACK KE USER *
+            *****************************************/
+            pesan = "Wow! " + "<b>" + datareply.jawaban + "</b>" + " nama yang bagus!";
+            
+            kirimChatAction( data.message.chat.id, "typing" );
+
+            /*******************************
+            * SIMPAN DATA KE GOOGLE SHEETS *
+            ********************************/
+            let googleSheetName = "ForceReply";
+            
+            let googleSheetData = 
+              googleSheetFile.getSheetByName( googleSheetName ) ?
+              googleSheetFile.getSheetByName( googleSheetName ) :
+              googleSheetFile.insertSheet( googleSheetName );
+            
+            let headers = googleSheetData.getRange( 1, 1, 1, Object.keys( datareply ).length ).getValues()[0];
+
+            /******************
+            * CEK JUDUL KOLOM *
+            *******************/
+            for ( let i = 0; i < headers.length; i++ ) {
+              if ( headers[i] === "" || headers[i] !== Object.keys( datareply )[i] ) {
+                googleSheetData.getRange( 1, i + 1 ).setValue( Object.keys( datareply )[i] );
+              }
+            }
+
+            /******************
+            * SIMPAN KE SHEET *
+            *******************/
+            let values = [ Object.values( datareply ) ];
+            let googleSheetValues = googleSheetData.getRange( googleSheetData.getLastRow() + 1, 1, 1, Object.values( datareply ).length );
+            googleSheetValues.setValues( values );
+            
+            //SpreadsheetApp.flush();
+            
+            pesan += "\n" + "\n" + "data sudah disimpan dalam Google Sheets";
+
+
+          } else pesan = "Jawaban anda bukan reply dari pertanyaan @" + telegramBotUsername;
+
+        }
+        
+        let dataPesan = {
+          method: "post",
+          payload: {
+            method: "sendMessage",
+            chat_id: String( data.message.chat.id ),
+            parse_mode: "HTML",
+            disable_web_page_preview: "false",
+            text: pesan
+          }
+        };
+        UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );
+
+      }
+    }
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+}
