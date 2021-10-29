@@ -1,6 +1,6 @@
 /******************************************************************************************
 * Salin ke file Code.gs atau file .gs tersendiri di Apps Script
-* Memaksa Input User dengan ForceReply di Telegram
+* Input User Dengan ForceReply Di Telegram
 * 
 *******************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
