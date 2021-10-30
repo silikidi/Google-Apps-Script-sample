@@ -1,0 +1,310 @@
+/***********************************************************************************************
+* Input Step By Step Dengan Cache Apps Script Di Telegram
+* 
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ADMIN";
+const telegramBotID = "ID_BOT";
+const telegramBotUsername = "USERNAME_BOT_ANDA";
+
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+const googleSheetID = "ID_GOOGLE_SHEETS_ANDA";
+const googleSheetFile = SpreadsheetApp.openById( googleSheetID );
+
+
+/**********************************************************************************************************************
+* URL Sheets yang dipublikasikan ke dalam format web
+* Lihat artikel https://telegram-bot-script.blogspot.com/2021/10/publikasi-web-dashboard-poll-dengan-google-sheets.html
+***********************************************************************************************************************/
+const googleSheetPublishURL = "URL_WEB_PUBLISH_SHEETS_ANDA";
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+* deleteWebhook() menghapus koneksi yang dibangun setWebhook *
+****************************************************************/
+function getMe() {
+  let url = telegramAPIURL + "/getMe";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function setWebhook() {
+  let url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function deleteWebhook() {
+  let url = telegramAPIURL + "/deleteWebhook";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+  let dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: "HTML",
+      disable_web_page_preview: "false",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/*********************************
+* KIRIM NOTIFIKASI STATUS PROSES *
+**********************************/
+function kirimChatAction( chatid, action ) {
+  var dataAction = {
+    method: "post",
+    payload: {
+      method: "sendChatAction",
+      chat_id: String( chatid ),
+      action: action
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataAction );
+}
+
+
+/*************
+* FORCEREPLY *
+**************/
+function forceReply( chatid, pertanyaan ) {
+  let dataReply = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: "HTML",
+      chat_id: String( chatid ),
+      text: pertanyaan,
+      reply_markup: JSON.stringify({
+        "force_reply": true
+      })
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataReply );
+}
+
+
+/*************
+* SAVE2SHEET *
+**************/
+function simpanSheets( googleSheetName, objectData ) {
+  
+  try {
+    
+    /*******************************
+    * SIMPAN DATA KE GOOGLE SHEETS *
+    ********************************/
+    let googleSheetData = 
+      googleSheetFile.getSheetByName( googleSheetName ) ?
+      googleSheetFile.getSheetByName( googleSheetName ) :
+      googleSheetFile.insertSheet( googleSheetName );
+    let headers = googleSheetData.getRange( 1, 1, 1, Object.keys( objectData ).length ).getValues()[0];
+
+    /******************
+    * CEK JUDUL KOLOM *
+    *******************/
+    for ( let i = 0; i < headers.length; i++ ) {
+      if ( headers[i] === "" || headers[i] !== Object.keys( objectData )[i] ) {
+        googleSheetData.getRange( 1, i + 1 ).setValue( Object.keys( objectData )[i] );
+      }
+    }
+
+    /************************
+    * SIMPAN KE SHEET *
+    * SpreadsheetApp.flush();
+    *************************/
+    let values = [ Object.values( objectData ) ];
+    let googleSheetValues = googleSheetData.getRange( googleSheetData.getLastRow() + 1, 1, 1, Object.values( objectData ).length );
+    googleSheetValues.setValues( values );
+
+    /**************************
+    * KEMBALIKAN BERUPA PESAN *
+    ***************************/
+    return "\n" + "\n" + "data sudah disimpan dalam <a href='" + googleSheetPublishURL + "'>Google Sheets</a>";
+
+  } catch(e) { 
+    return "Data mungkin tidak tersimpan di <a href='" + googleSheetPublishURL + "'>Google Sheets</a>!" + "\n" + "ERROR: " + "\n" + String( e );
+  }
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  const data = JSON.parse( e.postData.contents );
+
+  try {
+
+    if ( ( data || {} ).message ){
+
+      const step = [
+        "STEP#1 - Warna favorit anda?",
+        "STEP#2 - Buah favorit anda?",
+        "STEP#3 - Cemilan favorit anda?",
+        "STEP#4 - ketik Y selesai N ulangi"
+      ];
+
+      if ( data.message.text === "/forcereply" ) {
+
+        forceReply( data.message.chat.id, "Halo... Sebutkan nama anda" );
+
+
+      } else if ( data.message.text === "/stepbystep" ) {
+
+        forceReply( data.message.chat.id, step[0] );
+
+
+      } else {
+        
+        let pesan = "Gunakan Menu command untuk demo";
+        
+        /*************************************************
+        * CEK BILA JAWABAN DARI USER TERHADAP FORCEREPLY *
+        **************************************************/
+        if ( data.message.reply_to_message ) {
+
+          const reply = data.message.reply_to_message;
+          let dataReply = {};
+
+          dataReply[ "idchat" ] = String( data.message.chat.id );
+          dataReply[ "tanggal" ] = new Date( reply.date * 1000 );
+          dataReply[ "dijawab" ] = new Date( data.message.date * 1000 );
+          dataReply[ "iduser" ] = String( data.message.from.id );
+          dataReply[ "username" ] = data.message.from.username;
+          dataReply[ "nama" ] = data.message.from.first_name;
+
+          /*************************************************************************************
+          * PASTIKAN KETERKAITAN JAWABAN USER DARI PERTANYAAN YANG SAMA DAN DARI BOT YANG SAMA *
+          **************************************************************************************/
+          if ( reply.from.is_bot && ( String( reply.from.id ) === telegramBotID ) && ( reply.from.username === telegramBotUsername ) ) {
+            
+            const textUser = data.message.text;
+            const textRegex = /\STEP\#(.*)/;
+
+            /*********************************
+            * JIKA REPLY ADALAH STEP BY STEP *
+            **********************************/
+            if ( textRegex.test( reply.text ) ) {
+              
+              const textExtract = reply.text.match( textRegex ).pop().split(" - "); //Array ["2", "Buah favorit anda?"]
+              const stepNumber = textExtract[0].trim();
+              const stepText = textExtract[1].trim();
+              
+              /*******************
+              * JIKA SELESAI [Y] *
+              ********************/
+              if ( stepText.toUpperCase() === "Y" ){
+                
+                pesan = "<b>" + "JAWABAN ANDA" + "</b>" + "\n";
+
+                for ( let i=0; i < step.length-1; i++ ) {
+                  
+                  let arrayStepText = step[i].split(" - ")[1].trim();
+                  pesan += "\n" + arrayStepText + ": " ;
+
+                  if ( cache.get( arrayStepText ) !== null ) {
+                    
+                    pesan += "<b>" + cache.get( arrayStepText ) + "</b>";
+
+                    /***** Dapatkan nilai cache dan tampung dalam objek *****/
+                    dataReply[ arrayStepText ] = cache.get( arrayStepText );
+
+                    /***** Hapus cache *****/
+                    cache.remove( arrayStepText );
+
+                  } else {
+                    
+                    /***** Isi objek dengan nilai kosong atau tanda - *****/
+                    dataReply[ arrayStepText ] = "-";
+                    pesan += "-";
+
+                  }
+                }
+                
+                /***** Simpan ke Google Sheets *****/
+                pesan += simpanSheets( "StepByStep", dataReply );
+
+
+              /******************
+              * JIKA ULANGI [N] *
+              *******************/
+              } else if ( stepText.trim().toUpperCase() === "N" ){
+                
+                /***** Kirimkan ForceReply dengan step pertama *****/
+                forceReply( data.message.chat.id, step[0] );
+
+
+              /*******************************
+              * JIKA MASIH DALAM STEP PROSES *
+              ********************************/
+              } else {
+                
+                /***** Hapus cache jika cache yang sama sudah ada sebelumnya *****/
+                if ( cache.get( stepText ) !== null ) cache.remove( stepText );
+
+                /***** Simpan ke cache *****/
+                cache.put( stepText, textUser );
+
+                /***** Kirimkan ForceReply dengan step selanjutnya *****/
+                forceReply( data.message.chat.id, step[ stepNumber + 1 ] );
+
+              }
+
+
+            /********************************
+            * JIKA REPLY BUKAN STEP BY STEP *
+            *********************************/
+            } else {
+            
+              /****************************************
+              * TAMPUNG DATA SEMENTARA KE DALAM OBJEK *
+              *****************************************/
+              dataReply[ "pertanyaan" ] = reply.text;
+              dataReply[ "jawaban" ] = textUser;
+
+              /*******************************
+              * KIRIM STATUS PROGRES KE USER *
+              ********************************/
+              kirimChatAction( data.message.chat.id, "typing" );
+
+              /****************************************
+              * BUAT NOTIFIKASI ATAU FEEDBACK KE USER *
+              *****************************************/
+              pesan = "Wow! " + "<b>" + dataReply.jawaban + "</b>" + " nama yang bagus!";
+
+              /*******************************
+              * SIMPAN DATA KE GOOGLE SHEETS *
+              ********************************/
+              pesan += simpanSheets( "ForceReply", dataReply );
+
+            }
+            
+          } else pesan = "Jawaban anda bukan reply dari pertanyaan @" + telegramBotUsername;
+
+        }
+        
+        /*************************
+        * KIRIM FEEDBACK KE USER *
+        **************************/
+        kirimPesan( String( data.message.chat.id ), pesan );
+
+
+      }
+    }
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+}
