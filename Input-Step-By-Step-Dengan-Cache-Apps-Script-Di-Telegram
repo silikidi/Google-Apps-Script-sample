@@ -3,22 +3,21 @@
 * 
 * Salin ke file Code.gs atau file .gs tersendiri di Apps Script
 ************************************************************************************************/
-const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIToken = "2028222207:AAEekQkvG3B_XXYKhrGGOFcR2c5u1UyA4l4";  //@simrsformbot
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
-const telegramAdminID = "ID_USER_ADMIN";
-const telegramBotID = "ID_BOT";
-const telegramBotUsername = "USERNAME_BOT_ANDA";
+const telegramAdminID = "1831579451";
+const telegramBotID = "2028222207";
+const telegramBotUsername = "simrsformbot";
 
-const googleWebAppsURL = "URL_WEB_APPS_ANDA";
-const googleSheetID = "ID_GOOGLE_SHEETS_ANDA";
+const googleWebAppsURL = "https://script.google.com/macros/s/AKfycbxbKdQof5cY1ai0-BWk8WVcYuBiHWtTV3EhU4KWQvLj0HNGHMJErb4ljW-vyiEiQdLf/exec";
+const googleSheetID = "1PKRBkcjAzitfzNfHI--Qri1NDfNfpls2IYlGSP_1mfY";
 const googleSheetFile = SpreadsheetApp.openById( googleSheetID );
-
 
 /**********************************************************************************************************************
 * URL Sheets yang dipublikasikan ke dalam format web
 * Lihat artikel https://telegram-bot-script.blogspot.com/2021/10/publikasi-web-dashboard-poll-dengan-google-sheets.html
 ***********************************************************************************************************************/
-const googleSheetPublishURL = "URL_WEB_PUBLISH_SHEETS_ANDA";
+const googleSheetPublishURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWttPuRtWYlFmk-F05ZqGbXHVXUbJZnLiP3FmFAEn5v5U7LmzzsjrdgqCqqUW9ehsXQHmLjo9h32an/pubhtml";
 
 
 /***************************************************************
@@ -171,8 +170,6 @@ function doPost(e) {
 
       } else {
         
-        let pesan = "Gunakan Menu command untuk demo";
-        
         /*************************************************
         * CEK BILA JAWABAN DARI USER TERHADAP FORCEREPLY *
         **************************************************/
@@ -201,15 +198,16 @@ function doPost(e) {
             **********************************/
             if ( textRegex.test( reply.text ) ) {
               
+              const cache = CacheService.getScriptCache();
               const textExtract = reply.text.match( textRegex ).pop().split(" - "); //Array ["2", "Buah favorit anda?"]
-              const stepNumber = textExtract[0].trim();
+              const stepNumber = Number( textExtract[0].trim() );
               const stepText = textExtract[1].trim();
-              
+
               /*******************
               * JIKA SELESAI [Y] *
               ********************/
-              if ( stepText.toUpperCase() === "Y" ){
-                
+              if ( textUser.toUpperCase() === "Y" ){
+
                 pesan = "<b>" + "JAWABAN ANDA" + "</b>" + "\n";
 
                 for ( let i=0; i < step.length-1; i++ ) {
@@ -238,12 +236,13 @@ function doPost(e) {
                 
                 /***** Simpan ke Google Sheets *****/
                 pesan += simpanSheets( "StepByStep", dataReply );
+                kirimPesan( String( data.message.chat.id ), pesan );
 
 
               /******************
               * JIKA ULANGI [N] *
               *******************/
-              } else if ( stepText.trim().toUpperCase() === "N" ){
+              } else if ( textUser.toUpperCase() === "N" ){
                 
                 /***** Kirimkan ForceReply dengan step pertama *****/
                 forceReply( data.message.chat.id, step[0] );
@@ -261,7 +260,7 @@ function doPost(e) {
                 cache.put( stepText, textUser );
 
                 /***** Kirimkan ForceReply dengan step selanjutnya *****/
-                forceReply( data.message.chat.id, step[ stepNumber + 1 ] );
+                forceReply( data.message.chat.id, step[ stepNumber ] );
 
               }
 
@@ -292,18 +291,12 @@ function doPost(e) {
               ********************************/
               pesan += simpanSheets( "ForceReply", dataReply );
 
+              kirimPesan( String( data.message.chat.id ), pesan );
+
             }
             
-          } else pesan = "Jawaban anda bukan reply dari pertanyaan @" + telegramBotUsername;
-
-        }
-        
-        /*************************
-        * KIRIM FEEDBACK KE USER *
-        **************************/
-        kirimPesan( String( data.message.chat.id ), pesan );
-
-
+          } else kirimPesan( String( data.message.chat.id ), "Jawaban anda bukan reply dari pertanyaan @" + telegramBotUsername );
+        } else kirimPesan( String( data.message.chat.id ), "Gunakan Menu command untuk demo" );
       }
     }
   } catch(e) { kirimPesan( telegramAdminID, e ); }
