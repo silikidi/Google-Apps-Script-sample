@@ -1,7 +1,7 @@
 /***********************************************************************************************
-* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
 * Input User Dengan ForceReply Di Telegram
 * https://telegram-bot-script.blogspot.com/2021/10/input-user-dengan-forcereply-di-telegram.html
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
 ************************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
