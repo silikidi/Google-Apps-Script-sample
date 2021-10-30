@@ -3,21 +3,21 @@
 * 
 * Salin ke file Code.gs atau file .gs tersendiri di Apps Script
 ************************************************************************************************/
-const telegramAPIToken = "2028222207:AAEekQkvG3B_XXYKhrGGOFcR2c5u1UyA4l4";  //@simrsformbot
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
-const telegramAdminID = "1831579451";
-const telegramBotID = "2028222207";
-const telegramBotUsername = "simrsformbot";
+const telegramAdminID = "ID_USER_ADMIN";
+const telegramBotID = "ID_BOT";
+const telegramBotUsername = "USERNAME_BOT_ANDA";
 
-const googleWebAppsURL = "https://script.google.com/macros/s/AKfycbxbKdQof5cY1ai0-BWk8WVcYuBiHWtTV3EhU4KWQvLj0HNGHMJErb4ljW-vyiEiQdLf/exec";
-const googleSheetID = "1PKRBkcjAzitfzNfHI--Qri1NDfNfpls2IYlGSP_1mfY";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+const googleSheetID = "ID_GOOGLE_SHEETS_ANDA";
 const googleSheetFile = SpreadsheetApp.openById( googleSheetID );
 
 /**********************************************************************************************************************
 * URL Sheets yang dipublikasikan ke dalam format web
 * Lihat artikel https://telegram-bot-script.blogspot.com/2021/10/publikasi-web-dashboard-poll-dengan-google-sheets.html
 ***********************************************************************************************************************/
-const googleSheetPublishURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWttPuRtWYlFmk-F05ZqGbXHVXUbJZnLiP3FmFAEn5v5U7LmzzsjrdgqCqqUW9ehsXQHmLjo9h32an/pubhtml";
+const googleSheetPublishURL = "URL_PUBLISH_SHEETS_ANDA";
 
 
 /***************************************************************
@@ -135,7 +135,7 @@ function simpanSheets( googleSheetName, objectData ) {
     return "\n" + "\n" + "data sudah disimpan dalam <a href='" + googleSheetPublishURL + "'>Google Sheets</a>";
 
   } catch(e) { 
-    return "Data mungkin tidak tersimpan di <a href='" + googleSheetPublishURL + "'>Google Sheets</a>!" + "\n" + "ERROR: " + "\n" + String( e );
+    return "Data mungkin tidak tersimpan di <a href='" + googleSheetPublishURL + "'><b>Google Sheets</b></a>!" + "\n" + "ERROR: " + "\n" + String( e );
   }
 }
 
