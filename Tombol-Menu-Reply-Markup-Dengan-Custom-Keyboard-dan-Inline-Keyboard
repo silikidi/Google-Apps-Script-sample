@@ -1,0 +1,383 @@
+/**************************************************************************************************************
+* Tombol Menu Reply Markup dengan Custom Keyboard dan Inline Keyboard
+* 
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+***************************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ADMIN";
+const telegramBotID = "ID_BOT";
+const telegramBotUsername = "USERNAME_BOT_ANDA";
+
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+const googleSheetID = "ID_GOOGLE_SHEETS_ANDA";
+const googleSheetFile = SpreadsheetApp.openById( googleSheetID );
+
+/**********************************************************************************************************************
+* URL Sheets yang dipublikasikan ke dalam format web
+* Lihat artikel https://telegram-bot-script.blogspot.com/2021/10/publikasi-web-dashboard-poll-dengan-google-sheets.html
+***********************************************************************************************************************/
+const googleSheetPublishURL = "URL_PUBLISH_SHEETS_ANDA";
+
+
+/****************************
+* CUSTOM & INLINE KEYBOARDS *
+*****************************/
+const keyboard = {
+  "customkeyboards_3" : {
+    "resize_keyboard": true,
+    "keyboard": [ [ { "text": "TOMBOL 1 👆" }, { "text": "TOMBOL 2 🤘" }, { "text": "TOMBOL 3 🤟" } ] ]
+  },
+  "customkeyboards_2_1" : {
+    "resize_keyboard": true,
+    "keyboard": [ 
+      [ { "text": "TOMBOL 1 👆" }, { "text": "TOMBOL 2 🤘" } ],
+      [ { "text": "TOMBOL 3 🤟" } ]
+    ]
+  },
+  "customkeyboards_1_2" : {
+    "resize_keyboard": true,
+    "keyboard": [ 
+      [ { "text": "TOMBOL 1 👆" } ],
+      [ { "text": "TOMBOL 2 🤘" }, { "text": "TOMBOL 3 🤟" } ]
+    ]
+  },
+  "inlinekeyboards_3" : {
+    "inline_keyboard": [
+      [ 
+        { "text": "👆 EMPTY", "callback_data": "emptyness" }, 
+        { "text": "🤘 CALLBACK_DATA", "callback_data": "Hello world!" }, 
+        { "text": "🤟 URL", "url": "https://telegram-bot-script.blogspot.com/" }
+      ]
+    ]
+  },
+  "inlinekeyboards_2_1" : {
+    "inline_keyboard": [
+      [ { "text": "👆 EMPTY", "callback_data": "emptyness" }, { "text": "🤘 CALLBACK_DATA", "callback_data": "Hello world!" } ],
+      [ { "text": "🤟 URL", "url": "https://telegram-bot-script.blogspot.com/" } ]
+    ]
+  },
+  "inlinekeyboards_1_2" : {
+    "inline_keyboard": [
+      [ { "text": "👆 EMPTY", "callback_data": "emptyness" } ],
+      [ { "text": "🤘 CALLBACK_DATA", "callback_data": "Hello world!" }, { "text": "🤟 URL", "url": "https://telegram-bot-script.blogspot.com/" } ]
+    ]
+  }
+};
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+* deleteWebhook() menghapus koneksi yang dibangun setWebhook *
+****************************************************************/
+function getMe() {
+  let url = telegramAPIURL + "/getMe";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function setWebhook() {
+  let url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function deleteWebhook() {
+  let url = telegramAPIURL + "/deleteWebhook";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan, replymarkup ) {
+  let dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: "HTML",
+      disable_web_page_preview: "false",
+      chat_id: String( targetID ),
+      text: String( pesan ),
+      reply_markup: replymarkup
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/*********************************
+* KIRIM NOTIFIKASI STATUS PROSES *
+**********************************/
+function kirimChatAction( chatid, action ) {
+  var dataAction = {
+    method: "post",
+    payload: {
+      method: "sendChatAction",
+      chat_id: String( chatid ),
+      action: action
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataAction );
+}
+
+
+/*************
+* SAVE2SHEET *
+**************/
+function simpanSheets( googleSheetName, objectData ) {
+  
+  try {
+    
+    /*******************************
+    * SIMPAN DATA KE GOOGLE SHEETS *
+    ********************************/
+    let googleSheetData = 
+      googleSheetFile.getSheetByName( googleSheetName ) ?
+      googleSheetFile.getSheetByName( googleSheetName ) :
+      googleSheetFile.insertSheet( googleSheetName );
+    let headers = googleSheetData.getRange( 1, 1, 1, Object.keys( objectData ).length ).getValues()[0];
+
+    /******************
+    * CEK JUDUL KOLOM *
+    *******************/
+    for ( let i = 0; i < headers.length; i++ ) {
+      if ( headers[i] === "" || headers[i] !== Object.keys( objectData )[i] ) {
+        googleSheetData.getRange( 1, i + 1 ).setValue( Object.keys( objectData )[i] );
+      }
+    }
+
+    /************************
+    * SIMPAN KE SHEET *
+    * SpreadsheetApp.flush();
+    *************************/
+    let values = [ Object.values( objectData ) ];
+    let googleSheetValues = googleSheetData.getRange( googleSheetData.getLastRow() + 1, 1, 1, Object.values( objectData ).length );
+    googleSheetValues.setValues( values );
+
+    /**************************
+    * KEMBALIKAN BERUPA PESAN *
+    ***************************/
+    return "\n" + "\n" + "data sudah disimpan dalam <a href='" + googleSheetPublishURL + "'><b>Google Sheets</b></a>";
+
+  } catch(e) { 
+    return "Data mungkin tidak tersimpan di <a href='" + googleSheetPublishURL + "'><b>Google Sheets</b></a>!" + "\n" + "ERROR: " + "\n" + String( e );
+  }
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  const data = JSON.parse( e.postData.contents );
+
+  try {
+
+    if ( ( data || {} ).message ){
+
+      var textUser = data.message.text;
+      
+      const step = [
+        "STEP#1 - Warna favorit anda?",
+        "STEP#2 - Buah favorit anda?",
+        "STEP#3 - Cemilan favorit anda?",
+        "STEP#4 - ketik Y selesai N ulangi"
+      ];
+
+      if ( textUser === "/forcereply" ) {
+
+        kirimPesan( data.message.chat.id, "Halo... Sebutkan nama anda", JSON.stringify({ "force_reply": true }) );
+
+
+      } else if ( textUser === "/stepbystep" ) {
+
+        kirimPesan( data.message.chat.id, step[0], JSON.stringify({ "force_reply": true }) );
+
+
+      } else {
+        
+        /*************************************************
+        * CEK BILA JAWABAN DARI USER TERHADAP FORCEREPLY *
+        **************************************************/
+        if ( data.message.reply_to_message ) {
+
+          const reply = data.message.reply_to_message;
+          let dataReply = {};
+
+          dataReply[ "idchat" ] = String( data.message.chat.id );
+          dataReply[ "tanggal" ] = new Date( reply.date * 1000 );
+          dataReply[ "dijawab" ] = new Date( data.message.date * 1000 );
+          dataReply[ "iduser" ] = String( data.message.from.id );
+          dataReply[ "username" ] = data.message.from.username;
+          dataReply[ "nama" ] = data.message.from.first_name;
+
+          /*************************************************************************************
+          * PASTIKAN KETERKAITAN JAWABAN USER DARI PERTANYAAN YANG SAMA DAN DARI BOT YANG SAMA *
+          **************************************************************************************/
+          if ( reply.from.is_bot && ( String( reply.from.id ) === telegramBotID ) && ( reply.from.username === telegramBotUsername ) ) {
+            
+            const textRegex = /\STEP\#(.*)/;
+
+            /*********************************
+            * JIKA REPLY ADALAH STEP BY STEP *
+            **********************************/
+            if ( textRegex.test( reply.text ) ) {
+              
+              const cache = CacheService.getScriptCache();
+              const textExtract = reply.text.match( textRegex ).pop().split(" - "); //Array ["2", "Buah favorit anda?"]
+              const stepNumber = Number( textExtract[0].trim() );
+              const stepText = textExtract[1].trim();
+
+              /*******************
+              * JIKA SELESAI [Y] *
+              ********************/
+              if ( textUser.toUpperCase() === "Y" ){
+
+                pesan = "<b>" + "JAWABAN ANDA" + "</b>" + "\n";
+
+                for ( let i=0; i < step.length-1; i++ ) {
+                  
+                  let arrayStepText = step[i].split(" - ")[1].trim();
+                  pesan += "\n" + arrayStepText + " " ;
+
+                  if ( cache.get( arrayStepText ) !== null ) {
+                    
+                    pesan += "<b>" + cache.get( arrayStepText ) + "</b>";
+
+                    /***** Dapatkan nilai cache dan tampung dalam objek *****/
+                    dataReply[ arrayStepText ] = cache.get( arrayStepText );
+
+                    /***** Hapus cache *****/
+                    cache.remove( arrayStepText );
+
+                  } else {
+                    
+                    /***** Isi objek dengan nilai kosong atau tanda - *****/
+                    dataReply[ arrayStepText ] = "-";
+                    pesan += "-";
+
+                  }
+                }
+                
+                /***** Simpan ke Google Sheets *****/
+                pesan += simpanSheets( "StepByStep", dataReply );
+                kirimPesan( String( data.message.chat.id ), pesan );
+
+
+              /******************
+              * JIKA ULANGI [N] *
+              *******************/
+              } else if ( textUser.toUpperCase() === "N" ){
+                
+                /***** Kirimkan ForceReply dengan step pertama *****/
+                kirimPesan( data.message.chat.id, step[0], JSON.stringify({ "force_reply": true }) );
+
+
+              /*******************************
+              * JIKA MASIH DALAM STEP PROSES *
+              ********************************/
+              } else {
+                
+                /***** Hapus cache jika cache yang sama sudah ada sebelumnya *****/
+                if ( cache.get( stepText ) !== null ) cache.remove( stepText );
+
+                /***** Simpan ke cache *****/
+                cache.put( stepText, textUser );
+
+                /***** Kirimkan ForceReply dengan step selanjutnya *****/
+                kirimPesan( data.message.chat.id, step[ stepNumber ], JSON.stringify({ "force_reply": true }) );
+
+              }
+
+
+            /********************************
+            * JIKA REPLY BUKAN STEP BY STEP *
+            *********************************/
+            } else {
+            
+              /****************************************
+              * TAMPUNG DATA SEMENTARA KE DALAM OBJEK *
+              *****************************************/
+              dataReply[ "pertanyaan" ] = reply.text;
+              dataReply[ "jawaban" ] = textUser;
+
+              /*******************************
+              * KIRIM STATUS PROGRES KE USER *
+              ********************************/
+              kirimChatAction( data.message.chat.id, "typing" );
+
+              /****************************************
+              * BUAT NOTIFIKASI ATAU FEEDBACK KE USER *
+              *****************************************/
+              pesan = "Wow! " + "<b>" + dataReply.jawaban + "</b>" + " nama yang bagus!";
+
+              /*******************************
+              * SIMPAN DATA KE GOOGLE SHEETS *
+              ********************************/
+              pesan += simpanSheets( "ForceReply", dataReply );
+
+              kirimPesan( String( data.message.chat.id ), pesan );
+
+            }
+            
+          } else kirimPesan( String( data.message.chat.id ), "Jawaban anda bukan reply dari pertanyaan @" + telegramBotUsername );
+
+
+        } else {
+
+          let keyboardList = Object.keys( keyboard );
+          let textCommand = textUser.substring(1);
+
+          if ( keyboardList.includes( textCommand )) {
+            
+            let keyboardName = keyboardList[ keyboardList.indexOf( textCommand ) ];
+            kirimPesan( data.message.chat.id, "Demo " + textCommand, JSON.stringify( keyboard[ keyboardName ] ) );
+
+          } else if ( textUser === "/start" ) {
+            
+            kirimPesan( String( data.message.chat.id ), "Gunakan Menu command untuk demo" );
+
+          } else {
+            
+            /***********************************************************************************************************
+            * KIRIM STICKER *
+            * https://telegram-bot-script.blogspot.com/2021/10/mengirim-sticker-ke-chat-telegram-dengan-apps-script.html
+            ************************************************************************************************************/
+            let dataSticker = {
+              method: "post",
+              payload: {
+                method: "sendSticker",
+                chat_id: String( data.message.chat.id ),
+                reply_to_message_id: String( data.message.message_id ),
+                sticker: "CAACAgIAAxkBAAIBL2F_e84yR8Ef3D_ccty_NqqA2iotAAJMAQACUomRIyzkKh0sMQYCIQQ"
+              }
+            };
+            UrlFetchApp.fetch(telegramAPIURL + "/", dataSticker);
+
+            kirimPesan( String( data.message.chat.id ), "isi pesan: " + "<b>" + textUser + "</b>", JSON.stringify({ "remove_keyboard": true }) );
+
+          }
+          
+
+        }
+      }
+
+
+    /*********************************************************************************
+    * BILA CALLBACK_DATA INLINE KEYBOARD *
+    * https://github.com/silikidi/Telegram-JSON-Response/blob/main/CALLBACK_QUERY.json
+    * https://core.telegram.org/bots/api#callbackquery
+    **********************************************************************************/
+    } else if ( ( data || {} ).callback_query ) {
+      
+      kirimPesan( data.callback_query.message.chat.id, JSON.stringify( data, null, 4 ) );
+      kirimPesan( data.callback_query.message.chat.id, "callback_data: " + "<b>" + data.callback_query.data + "</b>" );
+
+    }
+
+
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+}
