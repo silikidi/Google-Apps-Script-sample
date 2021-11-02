@@ -1,0 +1,154 @@
+/*******************************************************************************************************************
+* Trik Mengatasi Error 400 Bad Request Message Is Not Modified
+* https://telegram-bot-script.blogspot.com/2021/11/trik-mengatasi-error-400-bad-request-message-is-not-modified.html
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+********************************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ADMIN";
+const telegramBotID = "ID_BOT";
+const telegramBotUsername = "USERNAME_BOT_ANDA";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+
+/*****************************
+* KONSTANTA INLINE KEYBOARDS *
+******************************/
+const keyboardPertama = { "inline_keyboard": [[{ "text": "🙈 KLIK UNTUK TOMBOL KEDUA", "callback_data": "keyboardKedua" }]] };
+const keyboardKedua = { "inline_keyboard": [[{ "text": "🙉 KLIK UNTUK TOMBOL KETIGA", "callback_data": "keyboardKetiga" }]] };
+const keyboardKetiga = { "inline_keyboard": [
+  [{ "text": "🙊 KEMBALI KE TOMBOL PERTAMA", "callback_data": "keyboardPertama" }],
+  [{ "text": "👀 LIHAT STRUKTUR JSON", "url": "https://github.com/silikidi/Telegram-JSON-Response/blob/main/INLINE-KEYBOARD-RESULT.json" }]
+] };
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+* deleteWebhook() menghapus koneksi yang dibangun setWebhook *
+****************************************************************/
+function getMe() {
+  let url = telegramAPIURL + "/getMe";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function setWebhook() {
+  let url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+function deleteWebhook() {
+  let url = telegramAPIURL + "/deleteWebhook";
+  let response = UrlFetchApp.fetch( url );
+  Logger.log( response.getContentText() );
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( chatID, pesan, menuTombol ) {
+  let dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: "HTML",
+      disable_web_page_preview: "false",
+      chat_id: String( chatID ),
+      text: pesan,
+      reply_markup: menuTombol
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataPesan );   
+}
+
+
+/***************************
+* FUNGSI EDIT MESSAGE TEXT *
+****************************/
+function editMessageText( chatID, messageID, pesan, menuTombol ) {
+  var dataEdit = {
+    method: "post",
+    payload: {
+      method: "editMessageText",
+      parse_mode: "HTML",
+      disable_web_page_preview: "true",
+      chat_id: String( chatID ),
+      message_id: String( messageID ),
+      text: pesan,
+      reply_markup: menuTombol
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataEdit );
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  const data = JSON.parse( e.postData.contents );
+
+  try {
+
+    if ( ( data || {} ).message ){
+
+      let textUser = data.message.text;
+
+      if ( textUser === "/demo" ) {
+
+        kirimPesan(
+          data.message.chat.id, 
+          "Halo! ini adalah " + "<b>" + "PESAN PERTAMA" + "</b>", 
+          JSON.stringify( keyboardPertama ) 
+        );
+
+      } else {
+        
+        kirimPesan(
+          data.message.chat.id, 
+          "Untuk demo gunakan command /demo"
+        );
+
+      }
+
+
+    /*************************************
+    * BILA CALLBACK_DATA INLINE KEYBOARD *
+    **************************************/
+    } else if ( ( data || {} ).callback_query ) {
+      
+      let dataCallback = data.callback_query.data;
+
+      if ( dataCallback === "keyboardPertama" ) {
+
+        editMessageText( 
+          data.callback_query.message.chat.id,
+          data.callback_query.message.message_id,
+          "Halo! ini adalah " + "<b>" + "PESAN PERTAMA" + "</b>", 
+          JSON.stringify( keyboardPertama )
+        );
+
+      } else if ( dataCallback === "keyboardKedua" ) {
+
+        editMessageText( 
+          data.callback_query.message.chat.id,
+          data.callback_query.message.message_id,
+          "Hai! ini adalah " + "<b>" + "PESAN KEDUA" + "</b>",
+          JSON.stringify( keyboardKedua )
+        );
+
+      } else if ( dataCallback === "keyboardKetiga" ) {
+
+        editMessageText( 
+          data.callback_query.message.chat.id,
+          data.callback_query.message.message_id,
+          "OMG! ini adalah " + "<b>" + "PESAN KETIGA" + "</b>",
+          JSON.stringify( keyboardKetiga )
+        );
+
+      }
+    }
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+}
