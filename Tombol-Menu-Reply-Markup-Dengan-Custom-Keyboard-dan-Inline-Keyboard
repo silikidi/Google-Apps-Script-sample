@@ -1,8 +1,8 @@
-/**************************************************************************************************************
+/**************************************************************************************************************************
 * Tombol Menu Reply Markup dengan Custom Keyboard dan Inline Keyboard
-* 
+* https://telegram-bot-script.blogspot.com/2021/11/tombol-menu-reply-markup-dengan-custom-keyboard-dan-inline-keyboard.html
 * Salin ke file Code.gs atau file .gs tersendiri di Apps Script
-***************************************************************************************************************/
+***************************************************************************************************************************/
 const telegramAPIToken = "API_TOKEN_BOT_ANDA";
 const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
 const telegramAdminID = "ID_USER_ADMIN";
