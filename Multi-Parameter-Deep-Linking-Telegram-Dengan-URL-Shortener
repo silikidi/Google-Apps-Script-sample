@@ -153,8 +153,8 @@ function doPost(e) {
       let pesan =
         "<b>" + "TIDAK ADA PARAMETER TERDETEKSI " + "</b>" + "\n" + "\n"
         + "Private Chat gunakan link berikut: " + "\n"
-        + "<a href='https://t.me/pertamakubot?start=AloHaloOo'>t.me/pertamakubot?start=AloHaloOo</a>" + "\n" + "\n"
-        + "Group Chat pilih atau ketik command: " + "\n" + "/startalohalooo@pertamakubot";
+        + "<a href='https://t.me/" + botUsername + "?start=AloHaloOo'>t.me/" + botUsername + "?start=AloHaloOo</a>" + "\n" + "\n"
+        + "Group Chat pilih atau ketik command: " + "\n" + "/startalohalooo@" + botUsername;
 
       /***** SEKALIPUN VIA URL TETAP OLEH TELEGRAM DILEWATKAN VIA COMMAND /START *****/
       if ( data.message.text.substring(0, 6) === "/start" && data.message.text.match(/\/start(.*)/).pop() !== "" ) {
