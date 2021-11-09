@@ -1,0 +1,220 @@
+/**************************************************************************************************
+* Scraping Data Emas Antam dan Google Finance
+* https://telegram-bot-script.blogspot.com/2021/11/scraping-data-emas-antam-dan-google-finance.html
+* Panduan instalasi dan penggunaan Simplescraper:
+* https://trakteer.id/silikidi/showcase/scraping-website-dengan-simplescraper-oL74a
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+***************************************************************************************************/
+const telegramAPIToken = "API_TOKEN_BOT_ANDA";
+const telegramAPIURL = "https://api.telegram.org/bot" + telegramAPIToken;
+const telegramAdminID = "ID_USER_ADMIN";
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+/************************
+* URL API SimpleScraper *
+*************************/
+const urlScraperHarga = "URL_API_SIMPLESCRAPER_HARGA_EMAS";
+const urlScraperBursa = "URL_API_SIMPLESCRAPER_BURSA_ANTAM";
+const urlHarga = "https://www.logammulia.com/id/harga-emas-hari-ini";
+const urlBursa = "https://www.google.com/finance/quote/ANTM:IDX";
+const urlLabel = [ "harga", "bursa" ];
+
+
+/***************************************************************
+* getMe() untuk request info tentang bot *
+* setWebHook() untuk membangun push system realtime dengan bot *
+****************************************************************/
+function getMe() {
+  let url = telegramAPIURL + "/getMe";
+  let response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function setWebhook() {
+  let url = telegramAPIURL + "/setWebhook?url=" + googleWebAppsURL;
+  let response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+function deleteWebhook() {
+  let url = telegramAPIURL + "/deleteWebhook";
+  let response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
+
+
+/*********************
+* FUNGSI KIRIM PESAN *
+**********************/
+function kirimPesan( targetID, pesan ) {
+  let dataPesan = {
+    method: "post",
+    payload: {
+      method: "sendMessage",
+      parse_mode: "HTML",
+      disable_web_page_preview: "false",
+      chat_id: String( targetID ),
+      text: String( pesan )
+    }
+  };
+  UrlFetchApp.fetch(telegramAPIURL + "/", dataPesan);   
+}
+
+
+/******************************************
+* FUNGSI UPDATE MANUAL HARGA HARIAN ANTAM *
+*******************************************/
+function antam( label ) {
+  
+  try {
+
+    let antamData = {};
+    
+    if ( urlLabel.includes( label.toLowerCase() ) ) {
+      
+      if ( label.toLowerCase() === "harga" ) {
+        
+        let antamFetch = JSON.parse( UrlFetchApp.fetch( urlScraperHarga ) );
+        let antamJSON = antamFetch.data[0].antamHargaHarian;
+        let antamJSONSplit = antamJSON.replace(/ \s+/g, "#").trim().split( "#" );
+
+        for ( let i = 0; i < antamJSONSplit.length; i++ ) {
+          /***** 0 genap 1 ganjil *****/
+          if ( i % 2 === 1 ) {
+            antamData[ antamJSONSplit[ i-1 ] ] = antamJSONSplit[ i ].replace( /rp/i, 'Rp ');
+          }
+        }
+
+        antamData["Perubahan Terakhir"] = new Date( antamData["Perubahan Terakhir"] );
+        antamData["url"] = urlHarga;
+        
+
+      } else if ( label.toLowerCase() === "bursa" ) {
+        
+        let antamFetch = UrlFetchApp.fetch( urlScraperBursa );
+        let antamParse = JSON.parse( antamFetch );
+        let antamJSON = antamParse.data[0];
+        
+        antamData["code"] = antamJSON.code + "\n";
+        antamData["company"] = antamJSON.company + "\n";
+        antamData["closeCurrent"] = "Penutupan: " + "Rp " + antamJSON.closeCurrent.split( "Rp" ).pop().trim() + "\n";
+        antamData["closePrevious"] = "Sebelumnya: " + "Rp " + antamJSON.closePrevious.split( "Rp" ).pop().trim() + "\n";
+        antamData["point"] = antamJSON.point !== "" ? antamJSON.point.split( " " ).shift().trim() + " (" + antamJSON.percent + ")" + "\n": "";
+        antamData["date"] = "Update: " + new Date( antamJSON.date.split( "·" ).shift().trim() ) + "\n";
+        antamData["url"] = urlBursa;
+
+      }
+
+    }
+    
+    return antamData;
+
+  } catch(e) { return null; }
+}
+
+
+/*************************************************************
+* FUNGSI PENERIMA KIRIMAN DATA DARI TELEGRAM API VIA WEBHOOK *
+**************************************************************/
+function doPost(e) {
+
+  const data = JSON.parse( e.postData.contents );
+
+  try {      
+
+    /**************************************************************
+    * CEK BILA JSON BERASAL DARI SCRAPER DENGAN PROPERTI UNIK URL *
+    * update harga hanya bisa dikirimkan ke Admin Bot Telegram
+    ***************************************************************/
+    if ( ( data || {} ).url ) {
+
+      if ( data.url === urlHarga ) {
+        
+        let antamData = {};
+        let antamJSON = data.data[0].antamHargaHarian;
+        let antamJSONSplit = antamJSON.replace(/ \s+/g, "#").trim().split( "#" );
+        for ( let i = 0; i < antamJSONSplit.length; i++ ) {
+          if ( i % 2 === 1 ) {
+            antamData[ antamJSONSplit[ i-1 ] ] = antamJSONSplit[ i ];
+          }
+        }
+        antamData["Perubahan Terakhir"] = new Date( antamData["Perubahan Terakhir"] );
+
+        let pesan = "<b>" + "INFO HARGA ANTAM" + "</b>" + "\n" + "\n";
+        for ( let [key, value] of Object.entries( antamData ) ) {
+          pesan += key + ": " + "<b>" + value + "</b>" + "\n";
+        }
+        kirimPesan( telegramAdminID, pesan );
+
+
+      } else if ( data.url === urlBursa ) {
+        
+        let antamData = {};
+        let antamJSON = data.data[0];
+        antamData["code"] = antamJSON.code + "\n";
+        antamData["company"] = antamJSON.company + "\n";
+        antamData["closeCurrent"] = "Penutupan: " + "Rp " + antamJSON.closeCurrent.split( "Rp" ).pop().trim() + "\n";
+        antamData["closePrevious"] = "Sebelumnya: " + "Rp " + antamJSON.closePrevious.split( "Rp" ).pop().trim() + "\n";
+        antamData["point"] = antamJSON.point !== "" ? antamJSON.point.split( " " ).shift().trim() + " (" + antamJSON.percent + ")" + "\n" : "";
+        antamData["date"] = "Update: " + new Date( antamJSON.date.split( "·" ).shift().trim() ) + "\n";
+        antamData["url"] = urlBursa;
+
+        let pesan = "<b>" + "INFO BURSA ANTAM" + "</b>" + "\n" + "\n";
+        for ( let [key, value] of Object.entries( antamData ) ) {
+          pesan += value;
+        }
+        kirimPesan( telegramAdminID, pesan );
+
+      }
+
+
+    /********************************
+    * CEK BILA TERDAPAT COMMAND BOT *
+    *********************************/
+    } else if ( (( data || {} ).message || {}).text ) {
+
+      
+      if ( data.message.text === "/start" ) { 
+
+        kirimPesan( data.message.chat.id, "Gunakan Menu Command" );
+
+
+      /************************************
+      * COMMAND UPDATE MANUAL HARGA ANTAM *
+      *************************************/
+      } else if ( data.message.text === "/antamharga" ) { 
+
+        let antamData = antam( "harga" );
+
+        if ( antamData !== null ) {
+          
+          let pesan = "<b>" + "INFO HARGA ANTAM" + "</b>" + "\n" + "\n";
+          for ( let [key, value] of Object.entries( antamData ) ) {
+            pesan += key + ": " + "<b>" + value + "</b>" + "\n";
+          }
+          kirimPesan( data.message.chat.id, pesan );
+
+        }
+
+
+      /************************************
+      * COMMAND UPDATE MANUAL BURSA ANTAM *
+      *************************************/
+      } else if ( data.message.text === "/antambursa" ) {
+
+        let antamData = antam( "bursa" );
+
+        if ( antamData !== null ) {
+          
+          let pesan = "<b>" + "INFO BURSA ANTAM" + "</b>" + "\n" + "\n";
+          for ( let [key, value] of Object.entries( antamData ) ) {
+            pesan += value;
+          }
+          kirimPesan( data.message.chat.id, pesan );
+
+        }
+
+
+      }
+
+    }
+  } catch(e) { kirimPesan( telegramAdminID, e ); }
+}
