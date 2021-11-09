@@ -59,6 +59,22 @@ function kirimPesan( targetID, pesan ) {
 }
 
 
+/*********************
+* FUNGSI STATUS CHAT *
+**********************/
+function kirimChatAction( chatID, action ) {
+  var dataAction = {
+    method: "post",
+    payload: {
+      method: "sendChatAction",
+      chat_id: String( chatID ),
+      action: String( action )
+    }
+  };
+  UrlFetchApp.fetch( telegramAPIURL + "/", dataAction );
+}
+
+
 /******************************************
 * FUNGSI UPDATE MANUAL HARGA HARIAN ANTAM *
 *******************************************/
@@ -182,6 +198,9 @@ function doPost(e) {
       *************************************/
       } else if ( data.message.text === "/antamharga" ) { 
 
+        kirimPesan( data.message.chat.id, "Silahkan tunggu proses memerlukan waktu" );
+        kirimChatAction( data.message.chat.id, "typing" );
+
         let antamData = antam( "harga" );
 
         if ( antamData !== null ) {
@@ -199,6 +218,9 @@ function doPost(e) {
       * COMMAND UPDATE MANUAL BURSA ANTAM *
       *************************************/
       } else if ( data.message.text === "/antambursa" ) {
+
+        kirimPesan( data.message.chat.id, "Silahkan tunggu proses memerlukan waktu" );
+        kirimChatAction( data.message.chat.id, "typing" );
 
         let antamData = antam( "bursa" );
 
