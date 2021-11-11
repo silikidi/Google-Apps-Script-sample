@@ -7,7 +7,7 @@
 /*******************************
 * ENCODE DECODE BASE64 WEBSAFE *
 ********************************/
-function konversiBase64(base64Opsi, base64Data) {
+function konversiBase64( base64Opsi, base64Data ) {
   let base64Hasil = "Failed! sertakan data yang akan di <b>ENCODE/DECODE</b>";
   if ( base64Opsi && base64Opsi !== "" ) {
     if ( base64Opsi.toUpperCase() === "ENCODE" ) {
