@@ -1,0 +1,27 @@
+/****************************************************************************************************
+* True Random Dengan Apps Script dan Random.org
+* https://telegram-bot-script.blogspot.com/2021/11/true-random-dengan-apps-script-dan-random-org.html
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+*****************************************************************************************************/
+
+/*********************************************
+* PEMBANGKITAN TRUE RANDOM DENGAN RANDOM.ORG *
+**********************************************/
+const genTrueRandom = () => {
+  let randomURL = 'https://www.random.org/strings/?num=1&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new';
+  let response = UrlFetchApp.fetch( randomURL );
+  return response.getContentText();
+}
+
+
+/******************************************
+* UJICOBA PEMBANGKITAN ONLINE TRUE RANDOM *
+*******************************************/
+function createID() {
+  const userID = genTrueRandom();
+  const tokenID = genTrueRandom().trim() + genTrueRandom().trim() + genTrueRandom().trim() + genTrueRandom().trim().substring(0, 4);
+
+  Logger.log( 'userID anda : ' + userID );
+  Logger.log( 'tokenID anda : ' + tokenID );
+  Logger.log( 'Panjang token : ' + tokenID.length );
+}
