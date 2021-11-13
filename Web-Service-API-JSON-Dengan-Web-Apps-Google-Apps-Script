@@ -31,9 +31,7 @@ const doGet = ( e = {} ) => {
           "last_name": "DOE"
       },
       "items": [
-        {
-          "id": 2038723721
-        },
+        { "id": 2038723721 },
         {
           "brand": "Sapatu",
           "price": "Rp 270.000"
