@@ -1,0 +1,50 @@
+/**************************************************************************************************************
+* Web Service API JSON Dengan Web Apps Google Apps Script *
+* https://telegram-bot-script.blogspot.com/2021/11/web-service-api-json-dengan-web-apps-google-apps-script.html
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+***************************************************************************************************************/
+
+
+/*****************************************************************
+* URL WEB APPS *
+* Disimpan dalam konstanta untuk pengingat saja
+* Salin dan tempelkan URL Web Apps tersebut ke Browser dan Postman
+* untuk menguji hasilnya dalam bentuk JSON
+******************************************************************/
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+
+/******************************************************************
+* REQUEST & RESPONSE HANDLE VIA GET *
+* Setiap ada request melalui jalur GET akan ditampilkan JSON statis
+*******************************************************************/
+const doGet = ( e = {} ) => {
+  
+  let dataJSON = {
+   "ok": true,
+   "result": {
+      "date": 1633997773,
+      "valid": true,
+      "client": {
+          "username": "johndoe",
+          "first_name": "JOHN",
+          "last_name": "DOE"
+      },
+      "items": [
+        {
+          "id": 2038723721
+        },
+        {
+          "brand": "Sapatu",
+          "price": "Rp 270.000"
+        },
+        null
+      ]
+    }
+  };
+
+  return ContentService.createTextOutput(
+    JSON.stringify( dataJSON )
+  ).setMimeType( ContentService.MimeType.JSON );
+
+};
