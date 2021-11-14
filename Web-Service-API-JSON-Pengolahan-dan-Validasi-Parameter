@@ -13,26 +13,26 @@
 ******************************************************************/
 const googleWebAppsURL = "URL_WEB_APPS_ANDA";
 
-/**********************************************
+/***************************
 * DAFTAR KEY/FIELD DEFAULT *
-* https://stackoverflow.com/a/14368628/12682081
-* https://morioh.com/p/0b5bd0ececd4
-***********************************************/
+****************************/
 const keyParameter = [ "username", "firstname", "lastname" ].sort().join('|').toLowerCase().split('|');
-const emptyList = [ null, "null", "", ];
 
 
-/*************************************************
+/*********************************************************************
 * VALIDASI PARAMETER *
-{ valid: true/false, keyempty: [], keyunknown: [] }
-**************************************************/
+{ valid: true/false, key_missing: [], key_empty: {}, key_unknown: {} }
+**********************************************************************/
 const validateParameter = ( obj ) => {
+  
+  const emptyList = [ null, "null", "", ];
   let result = {};
   let keyEmpty = [];
   let valid = false;
   
   const keyUnknown = Object.keys( obj ).filter( custom => !keyParameter.includes( custom ) ).sort();
   const keyStandard = Object.keys( obj ).filter( standard => keyParameter.includes( standard ) ).sort().join('|').toLowerCase().split('|');
+  const keyMissing = keyParameter.filter( missing => !keyStandard.includes( missing ) ).sort();
 
   if ( keyStandard.length > 0 ) {  
     keyStandard.forEach( ( key ) => {
@@ -50,6 +50,7 @@ const validateParameter = ( obj ) => {
   } else result[ "error" ] = "Parameter origin tidak sesuai default!";
   
   result[ "valid" ] = valid;
+  result[ "key_missing" ] = keyMissing;
   result[ "key_empty" ] = {};
   result[ "key_unknown" ] = {};
 
@@ -69,9 +70,7 @@ const validateParameter = ( obj ) => {
 * GENERATE JSON OUTPUT *
 ************************/
 const generateJSON = ( dataJSON ) => {
-  return ContentService.createTextOutput(
-    JSON.stringify( dataJSON )
-  ).setMimeType( ContentService.MimeType.JSON );
+  return ContentService.createTextOutput( JSON.stringify( dataJSON ) ).setMimeType( ContentService.MimeType.JSON );
 }
 
 
@@ -98,13 +97,14 @@ const doGet = ( e ) => {
     parameterOBJ[ "parameter_default" ] = keyParameter;
     parameterOBJ[ "parameter_origin" ] = parameterData;
     parameterOBJ[ "parameter_empty" ] = parameterCek.key_empty;
+    parameterOBJ[ "parameter_missing" ] = parameterCek.key_missing;
     parameterOBJ[ "parameter_unknown" ] = parameterCek.key_unknown;
     parameterOBJ[ "error" ] = parameterCek.error;
     dataJSON[ "result" ] = parameterOBJ;
 
   } else {
     dataJSON[ "ok" ] = false;
-    dataJSON[ "result" ][ "error" ] = "Tidak ada parameter disertakan!";
+    dataJSON[ "result" ][ "error" ] = "Tidak ada parameter disertakan! Untuk request gunakan application\/x-www-form-urlencoded atau application\/json dan aktifkan follow redirects";
   }
   return generateJSON( dataJSON );
 };
@@ -124,50 +124,52 @@ const doPost = ( e = {} ) => {
     let parameterOBJ = {};
 
     if ( type === "application/json" ) {
-    
+      
       let parameterData = JSON.parse( contents );
       let parameterCek = validateParameter( parameterData );
-
       dataJSON[ "ok" ] = parameterCek.valid;
-
       parameterOBJ[ "parameter_default" ] = keyParameter;
       parameterOBJ[ "parameter_origin" ] = parameterData;
       parameterOBJ[ "parameter_empty" ] = parameterCek.key_empty;
+      parameterOBJ[ "parameter_missing" ] = parameterCek.key_missing;
       parameterOBJ[ "parameter_unknown" ] = parameterCek.key_unknown;
       parameterOBJ[ "error" ] = parameterCek.error;
       dataJSON[ "result" ] = parameterOBJ;
-
 
     } else if ( type === "application/x-www-form-urlencoded" ) {
-    
+      
       let parameterData = {};
       contents
-        .split( "&" )
-        .map( ( input ) => input.split( "=" ) )
-        .forEach( ( [key, value] ) => {
-          parameterData[ decodeURIComponent( key ) ] = decodeURIComponent( value );
-        });
+      .split( "&" )
+      .map( ( input ) => input.split( "=" ) )
+      .forEach( ( [key, value] ) => { 
+        parameterData[ decodeURIComponent( key ) ] = decodeURIComponent( value ); 
+      })
+
       let parameterCek = validateParameter( parameterData );
-
       dataJSON[ "ok" ] = parameterCek.valid;
-
       parameterOBJ[ "parameter_default" ] = keyParameter;
       parameterOBJ[ "parameter_origin" ] = parameterData;
       parameterOBJ[ "parameter_empty" ] = parameterCek.key_empty;
+      parameterOBJ[ "parameter_missing" ] = parameterCek.key_missing;
       parameterOBJ[ "parameter_unknown" ] = parameterCek.key_unknown;
       parameterOBJ[ "error" ] = parameterCek.error;
       dataJSON[ "result" ] = parameterOBJ;
 
-
     } else {
+      
       dataJSON[ "ok" ] = false;
-      dataJSON[ "result" ][ "error" ] = "Tidak ada parameter disertakan! Untuk request gunakan application\/x-www-form-urlencoded atau application\/json dan aktifkan follow redirects";
+      dataJSON[ "result" ][ "parameter_origin" ] = "unknown";
+      dataJSON[ "result" ][ "parameter_missing" ] = keyParameter;
+      dataJSON[ "result" ][ "error" ] = 
+        "Untuk request POST " 
+        + "gunakan application\/x-www-form-urlencoded atau application\/json " 
+        + "dan aktifkan follow redirects";
+      
     }
-  
   } catch(e) { 
     dataJSON[ "ok" ] = false;
-    dataJSON[ "result" ][ "error" ] = e;
+    dataJSON[ "result" ][ "error" ] = JSON.stringify( e );
   }
-
   return generateJSON( dataJSON );
 };
