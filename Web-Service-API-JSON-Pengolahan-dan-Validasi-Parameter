@@ -1,0 +1,173 @@
+/**************************************************************************************************************
+* coming soon *
+* ...
+* Salin ke file Code.gs atau file .gs tersendiri di Apps Script
+***************************************************************************************************************/
+
+
+/*****************************************************************
+* URL WEB APPS *
+* Disimpan dalam konstanta untuk pengingat saja
+* Salin dan tempelkan URL Web Apps tersebut ke Browser dan Postman
+* untuk menguji hasilnya dalam bentuk JSON
+******************************************************************/
+const googleWebAppsURL = "URL_WEB_APPS_ANDA";
+
+/**********************************************
+* DAFTAR KEY/FIELD DEFAULT *
+* https://stackoverflow.com/a/14368628/12682081
+* https://morioh.com/p/0b5bd0ececd4
+***********************************************/
+const keyParameter = [ "username", "firstname", "lastname" ].sort().join('|').toLowerCase().split('|');
+const emptyList = [ null, "null", "", ];
+
+
+/*************************************************
+* VALIDASI PARAMETER *
+{ valid: true/false, keyempty: [], keyunknown: [] }
+**************************************************/
+const validateParameter = ( obj ) => {
+  let result = {};
+  let keyEmpty = [];
+  let valid = false;
+  
+  const keyUnknown = Object.keys( obj ).filter( custom => !keyParameter.includes( custom ) ).sort();
+  const keyStandard = Object.keys( obj ).filter( standard => keyParameter.includes( standard ) ).sort().join('|').toLowerCase().split('|');
+
+  if ( keyStandard.length > 0 ) {  
+    keyStandard.forEach( ( key ) => {
+      if ( emptyList.includes( obj[ key ] ) ) { 
+        keyEmpty.push( key );
+      }
+    });
+  }
+
+  if ( JSON.stringify( keyStandard ) === JSON.stringify( keyParameter ) ) {
+    if ( keyEmpty.length === 0 ) {
+      valid = true;
+      result[ "error" ] = "no_error";
+    } else result[ "error" ] = "Parameter default bernilai kosong!";
+  } else result[ "error" ] = "Parameter origin tidak sesuai default!";
+  
+  result[ "valid" ] = valid;
+  result[ "key_empty" ] = {};
+  result[ "key_unknown" ] = {};
+
+  keyEmpty.forEach( ( key ) => {
+    result[ "key_empty" ][ key ] = obj[ key ];
+  });
+
+  keyUnknown.forEach( ( key ) => {
+    result[ "key_unknown" ][ key ] = obj[ key ];
+  });
+  
+  return result;
+}
+
+
+/***********************
+* GENERATE JSON OUTPUT *
+************************/
+const generateJSON = ( dataJSON ) => {
+  return ContentService.createTextOutput(
+    JSON.stringify( dataJSON )
+  ).setMimeType( ContentService.MimeType.JSON );
+}
+
+
+/******************************************************************
+* REQUEST & RESPONSE HANDLE VIA GET *
+* https://www.labnol.org/code/19871-get-post-requests-google-script
+*******************************************************************/
+const doGet = ( e ) => {
+
+  let dataJSON = {};
+  dataJSON[ "result" ] = {};
+
+  /***************************************
+  * CEK KETERSEDIAAN PARAMETER DALAM URL *
+  ****************************************/
+  if ( Object.keys( e.parameter ).length > 0 && e.queryString !== '' ){
+    
+    let parameterData = e.parameter;
+    let parameterCek = validateParameter( parameterData );
+
+    dataJSON[ "ok" ] = parameterCek.valid;
+
+    let parameterOBJ = {};
+    parameterOBJ[ "parameter_default" ] = keyParameter;
+    parameterOBJ[ "parameter_origin" ] = parameterData;
+    parameterOBJ[ "parameter_empty" ] = parameterCek.key_empty;
+    parameterOBJ[ "parameter_unknown" ] = parameterCek.key_unknown;
+    parameterOBJ[ "error" ] = parameterCek.error;
+    dataJSON[ "result" ] = parameterOBJ;
+
+  } else {
+    dataJSON[ "ok" ] = false;
+    dataJSON[ "result" ][ "error" ] = "Tidak ada parameter disertakan!";
+  }
+  return generateJSON( dataJSON );
+};
+
+
+/*************************************
+* REQUEST & RESPONSE HANDLE VIA POST *
+**************************************/
+const doPost = ( e = {} ) => {
+  
+  let dataJSON = {};
+  dataJSON[ "result" ] = {};
+  
+  try {
+  
+    const { postData: { contents, type } = {} } = e;
+    let parameterOBJ = {};
+
+    if ( type === "application/json" ) {
+    
+      let parameterData = JSON.parse( contents );
+      let parameterCek = validateParameter( parameterData );
+
+      dataJSON[ "ok" ] = parameterCek.valid;
+
+      parameterOBJ[ "parameter_default" ] = keyParameter;
+      parameterOBJ[ "parameter_origin" ] = parameterData;
+      parameterOBJ[ "parameter_empty" ] = parameterCek.key_empty;
+      parameterOBJ[ "parameter_unknown" ] = parameterCek.key_unknown;
+      parameterOBJ[ "error" ] = parameterCek.error;
+      dataJSON[ "result" ] = parameterOBJ;
+
+
+    } else if ( type === "application/x-www-form-urlencoded" ) {
+    
+      let parameterData = {};
+      contents
+        .split( "&" )
+        .map( ( input ) => input.split( "=" ) )
+        .forEach( ( [key, value] ) => {
+          parameterData[ decodeURIComponent( key ) ] = decodeURIComponent( value );
+        });
+      let parameterCek = validateParameter( parameterData );
+
+      dataJSON[ "ok" ] = parameterCek.valid;
+
+      parameterOBJ[ "parameter_default" ] = keyParameter;
+      parameterOBJ[ "parameter_origin" ] = parameterData;
+      parameterOBJ[ "parameter_empty" ] = parameterCek.key_empty;
+      parameterOBJ[ "parameter_unknown" ] = parameterCek.key_unknown;
+      parameterOBJ[ "error" ] = parameterCek.error;
+      dataJSON[ "result" ] = parameterOBJ;
+
+
+    } else {
+      dataJSON[ "ok" ] = false;
+      dataJSON[ "result" ][ "error" ] = "Tidak ada parameter disertakan! Untuk request gunakan application\/x-www-form-urlencoded atau application\/json dan aktifkan follow redirects";
+    }
+  
+  } catch(e) { 
+    dataJSON[ "ok" ] = false;
+    dataJSON[ "result" ][ "error" ] = e;
+  }
+
+  return generateJSON( dataJSON );
+};
