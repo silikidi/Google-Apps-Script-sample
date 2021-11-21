@@ -5,6 +5,10 @@
 > *Penjelasan lengkap di masing-masing **Artikel Panduan***  
 > *Untuk menyalin contoh Code.gs pada menu **[Overview](https://blogger.googleusercontent.com/img/a/AVvXsEiC6ELdl8w3Ila9rFfH_3e9h05LZrPFErqCURZVGszVgK8OGFwHKRNtMj9jg8t4Mtj2LnG-CXWAiiLr42sktsVeDeKkzGesXPtxbqtPdg5ZPgs6C9cTVi7WMv8oj7mpVshZU_BdC-hTBKnARlEavMybvIGSnHkBCyqAm22GqoKYCrBkNAcNbnBb7UqAUg=s0)** pilih icon **[Make a copy](https://blogger.googleusercontent.com/img/a/AVvXsEjc6qRFFQZi6WsdCPqcLqDhNAiHYKK8ZQ3jyAtwaEksBYkZdu8eqEcbOS-J429fno-_vHcYsej8CK1m-WuTCI1hMbuwoBRfl0SzNdsChLo-ooeyqx6iGVMEyfzQFooIDPx6wDNSILk9c4V4WyYqpZYSL2dHqZU6GScBo6aK-x8YY6sNr_Hd3w9-l6Swnw=s0)***  
 
+___
+
+### Update:
+
 **Random Seed, Secret Key, Token Google, dan oAuth dengan Apps Script**  
 \[ [Code.gs](https://script.google.com/d/1cefdtvo1GMtypsZXunuW1u1bq-KUE_1MBxAWJiDsevDbLhMfd3noHDPl/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/random-seed-secret-key-token-google-dan-oauth-dengan-apps-script.html) \] 
@@ -12,6 +16,8 @@
 **Menyisipkan Library Javascript Eksternal di Apps Script**  
 \[ [Code.gs](https://script.google.com/d/1ofX1c6ssz-m5dDNbx_Hd7YHX1eF66Dwwg7EQkvLvTnwsh-DEYDR4i1VJ/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/menyisipkan-library-javascript-eksternal-di-apps-script.html) \] 
+
+___
 
 **Scraping Data Emas Antam dan Google Finance**  
 \[ [Code.gs](https://script.google.com/d/1_AYQ2SI0pI4fCMH3jm7AFBM79fRS1fKL4oPVr5hNzMqXMscF1XoUFy0w/edit?usp=sharing) \] 
@@ -80,6 +86,6 @@
 \[ [Code.gs](https://script.google.com/d/1JZ6uizUSmsjkDPcRaRvI3NIuubeN97p5LWPmT4wGpFnOY3bzEWw2ePjO/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/menampilkan-status-progres-bot-dengan-chat-action.html) \] 
 
-**Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
+**Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
