@@ -55,10 +55,6 @@
 \[ [Artikel Panduan 4](https://telegram-bot-script.blogspot.com/2021/10/menyimpan-hasil-poll-telegram-ke-google-sheets.html) \] 
 \[ [Artikel Panduan 5](https://telegram-bot-script.blogspot.com/2021/10/publikasi-web-dashboard-poll-dengan-google-sheets.html) \] 
 
-**ZIP Folder Google Drive Dengan Apps Script**  
-\[ [Code.gs](https://script.google.com/d/1BuuoVEaJlPzfk7sVJPWikLRM_y6scvWKuUOHHVGiSFr_ovXqu347GZfq/edit?usp=sharing) \] 
-\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/zip-folder-google-drive-dengan-apps-script.html) \] 
-
 **Membuat Sertifikat Berdasarkan Username Telegram**  
 \[ [Code.gs](https://script.google.com/d/1QAI6u4iJjHHh3v0eDm7iz2_wuja4vqB6SBzM9Up1DS4hhzcipgDoPYru/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/sertifikat-berdasarkan-username-telegram.html) \] 
@@ -66,6 +62,15 @@
 **Membuat Sertifikat dengan Apps Script dan Bot Telegram**  
 \[ [Code.gs](https://script.google.com/d/1ADFgEWL8XK7jNedGT4Us8aH14Wj2DrPPrCp2xR4Shr6vbPpDBfOEuHuz/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/versi-upgrade-script-sertifikat.html) \] 
+
+**Mengirim File Google Drive ke Telegram**  
+\[ [Code.gs](https://script.google.com/d/1zvAcDz0k1eTUD8hVsamYU3dlv72b3N30KR1hEju7en9DetDu6BV-0mO3/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/mengirim-file-google-drive-ke-telegram.html) \] 
+
+**Info Folder dan ZIP Folder Google Drive dengan Apps Script**  
+\[ [Code.gs](https://script.google.com/d/1BuuoVEaJlPzfk7sVJPWikLRM_y6scvWKuUOHHVGiSFr_ovXqu347GZfq/edit?usp=sharing) \] 
+\[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/mengakses-folder-google-drive-dengan-apps-script.html) \] 
+\[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/zip-folder-google-drive-dengan-apps-script.html) \] 
 
 **Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
 
