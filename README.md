@@ -76,6 +76,10 @@
 \[ [Code.gs](https://script.google.com/d/15be-Uyx_G0ijsB0oNCvyRmqRSeoGvfkdIZsLjFWMnC-Fc68HYA6u037J/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/pemrograman-emoji.html) \] 
 
+**Menampilkan Status Progres Bot dengan Chat Action**  
+\[ [Code.gs](https://script.google.com/d/1JZ6uizUSmsjkDPcRaRvI3NIuubeN97p5LWPmT4wGpFnOY3bzEWw2ePjO/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/menampilkan-status-progres-bot-dengan-chat-action.html) \] 
+
 **Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
