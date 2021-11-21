@@ -72,6 +72,10 @@
 \[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/mengakses-folder-google-drive-dengan-apps-script.html) \] 
 \[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/zip-folder-google-drive-dengan-apps-script.html) \] 
 
+**Pemrograman Emoji**  
+\[ [Code.gs](https://script.google.com/d/15be-Uyx_G0ijsB0oNCvyRmqRSeoGvfkdIZsLjFWMnC-Fc68HYA6u037J/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/pemrograman-emoji.html) \] 
+
 **Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
