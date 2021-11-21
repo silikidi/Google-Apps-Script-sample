@@ -37,6 +37,10 @@
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/multi-parameter-deep-linking-telegram-dengan-url-shortener.html) \] 
 \[ [Code.gs](https://script.google.com/d/14ukTK4wX1O2V-0nRyxRkNqNoaAZxzyF8Slb2hGKBVaYyOgZN06-dviT5/edit?usp=sharing) \]  
 
+**Base64url Parameter Deep Linking Telegram**  
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/base64url-parameter-deep-linking-telegram.html) \] 
+\[ [Code.gs](https://script.google.com/d/14CfL-lhXHyQov5qZDP3YsUvSYWNttKRp_RVXUCNf0udM-P0xXlv2FcPa/edit?usp=sharing) \]  
+
 **Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
