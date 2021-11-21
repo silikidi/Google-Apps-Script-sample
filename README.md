@@ -88,7 +88,12 @@ ___
 
 **Membuat Bot Respon JSON**  
 \[ [Code.gs](https://script.google.com/d/1KCszv6wEJlkdDDY7X1hrf0fLf4W47Oy1hyOIR13UxUK1auR5WBh91_sj/edit?usp=sharing) \] 
-\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/membuat-bot-respon-json.html) \] 
+\[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/membuat-bot-respon-json.html) \] 
+\[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/melihat-struktur-json-kiriman-telegram.html) \] 
+
+**Mengambil Kiriman File Chat Telegram**  
+\[ [Code.gs](https://script.google.com/d/1pVjhfL4fr2XFbkTAWdzIvsNANJNBekBlBf1arK5iAHSYeS7N68TxFnqv/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/mengambil-kiriman-file-chat-telegram.html) \] 
 
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
