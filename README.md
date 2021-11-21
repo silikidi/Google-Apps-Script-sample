@@ -7,7 +7,7 @@
 
 **Random Seed, Secret Key, Token Google, dan oAuth dengan Apps Script**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/random-seed-secret-key-token-google-dan-oauth-dengan-apps-script.html) \] 
-\[ [Code.gs](https://script.google.com/d/1qQl2lM4qnMHtNX9K5nmQy4eV8dAiCQ_pc-ISW92GfwBbzvPEJx_CpHsH/edit?usp=sharing) \]  
+\[ [Code.gs](https://script.google.com/d/1cefdtvo1GMtypsZXunuW1u1bq-KUE_1MBxAWJiDsevDbLhMfd3noHDPl/edit?usp=sharing) \]  
 
 **Menyisipkan Library Javascript Eksternal di Apps Script**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/menyisipkan-library-javascript-eksternal-di-apps-script.html) \] 
