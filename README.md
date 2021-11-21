@@ -29,6 +29,10 @@
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/input-step-by-step-dengan-cache-apps-script-di-telegram.html) \] 
 \[ [Code.gs](https://script.google.com/d/114icEGnD-bQqbUWvlJb-yGPg1JZUHg1AXAH_CEwmaScLy9NJrFmK9qo4/edit?usp=sharing) \]  
 
+**Input User Dengan ForceReply Di Telegram**  
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/input-user-dengan-forcereply-di-telegram.html) \] 
+\[ [Code.gs](https://script.google.com/d/17Z7ckjsi_1mVqUOqeWPx7564D6M5mH5eDe0ij_vu_sCLj5YBgfmD-kED/edit?usp=sharing) \]  
+
 **Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
