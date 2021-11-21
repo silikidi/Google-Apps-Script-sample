@@ -86,6 +86,10 @@ ___
 \[ [Code.gs](https://script.google.com/d/1JZ6uizUSmsjkDPcRaRvI3NIuubeN97p5LWPmT4wGpFnOY3bzEWw2ePjO/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/menampilkan-status-progres-bot-dengan-chat-action.html) \] 
 
+**Membuat Bot Respon JSON**  
+\[ [Code.gs](https://script.google.com/d/1KCszv6wEJlkdDDY7X1hrf0fLf4W47Oy1hyOIR13UxUK1auR5WBh91_sj/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/membuat-bot-respon-json.html) \] 
+
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
