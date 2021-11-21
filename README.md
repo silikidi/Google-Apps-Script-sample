@@ -13,6 +13,10 @@
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/menyisipkan-library-javascript-eksternal-di-apps-script.html) \] 
 \[ [Code.gs](https://script.google.com/d/1ofX1c6ssz-m5dDNbx_Hd7YHX1eF66Dwwg7EQkvLvTnwsh-DEYDR4i1VJ/edit?usp=sharing) \]  
 
+**Scraping Data Emas Antam dan Google Finance**  
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/scraping-data-emas-antam-dan-google-finance.html) \] 
+\[ [Code.gs](https://script.google.com/d/19pt2ufHQQR39ftopNefhL6EHGAj15LBb0RJV327ctbox93304l4Jk91r/edit?usp=sharing) \]  
+
 **Inline Bot Telegram Dengan DuckDuckGo Instant Answer**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/inline-bot-telegram-dengan-duckduckgo-instant-answer.html) \] 
 \[ [Code.gs](https://script.google.com/d/14FaPl3Ovt0EHANd2ZEZu9N0mFD9XHO572lF3Q3cqYjqWg_UhtVBWBvux/edit?usp=sharing) \]  
