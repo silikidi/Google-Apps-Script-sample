@@ -7,7 +7,7 @@
 
 ___
 
-### Update:
+### Terbaru:
 
 **Random Seed, Secret Key, Token Google, dan oAuth dengan Apps Script**  
 \[ [Code.gs](https://script.google.com/d/1cefdtvo1GMtypsZXunuW1u1bq-KUE_1MBxAWJiDsevDbLhMfd3noHDPl/edit?usp=sharing) \] 
