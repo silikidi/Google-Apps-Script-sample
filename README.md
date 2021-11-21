@@ -15,15 +15,15 @@
 
 **Scraping Data Emas Antam dan Google Finance**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/scraping-data-emas-antam-dan-google-finance.html) \] 
-\[ [Code.gs](https://script.google.com/d/19pt2ufHQQR39ftopNefhL6EHGAj15LBb0RJV327ctbox93304l4Jk91r/edit?usp=sharing) \]  
+\[ [Code.gs](https://script.google.com/d/1_AYQ2SI0pI4fCMH3jm7AFBM79fRS1fKL4oPVr5hNzMqXMscF1XoUFy0w/edit?usp=sharing) \]  
 
 **Inline Bot Telegram Dengan DuckDuckGo Instant Answer**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/inline-bot-telegram-dengan-duckduckgo-instant-answer.html) \] 
-\[ [Code.gs](https://script.google.com/d/14FaPl3Ovt0EHANd2ZEZu9N0mFD9XHO572lF3Q3cqYjqWg_UhtVBWBvux/edit?usp=sharing) \]  
+\[ [Code.gs](https://script.google.com/d/1Np-MiLS64yudcqgM9tfkcxVfEtt-4mphhkfoE2f4XkdwT-NR6yM_PckE/edit?usp=sharing) \]  
 
 **Tombol Menu Reply Markup Dengan Custom Keyboard dan Inline Keyboard**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/tombol-menu-reply-markup-dengan-custom-keyboard-dan-inline-keyboard.html) \] 
-\[ [Code.gs](https://script.google.com/d/1iyInjyW-V7ifS5bgUEu6MnBoZDF9xZzrP1kvhlkrWnM-a3JaGZHnhdxB/edit?usp=sharing) \]  
+\[ [Code.gs](https://script.google.com/d/1MMt1ni5Ggc5qPVPdYoaQWK2mk_DxZD6F0AWULieOmI2Ubx7d90h_hfyI/edit?usp=sharing) \]  
 
 **Input Step By Step Dengan Cache Apps Script Di Telegram**  
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/input-step-by-step-dengan-cache-apps-script-di-telegram.html) \] 
