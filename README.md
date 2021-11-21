@@ -95,6 +95,10 @@ ___
 \[ [Code.gs](https://script.google.com/d/1pVjhfL4fr2XFbkTAWdzIvsNANJNBekBlBf1arK5iAHSYeS7N68TxFnqv/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/mengambil-kiriman-file-chat-telegram.html) \] 
 
+**Format Teks Untuk Menghias Pesan Telegram**  
+\[ [Code.gs](https://script.google.com/d/1xVnNStDkH45G2Ftqgvp3Ytd_DoWFlkH6ugTraTEE1-zAg_s6LhnLCTXB/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/format-teks-untuk-menghias-pesan-telegram.html) \] 
+
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
