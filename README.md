@@ -67,7 +67,7 @@
 \[ [Code.gs](https://script.google.com/d/1zvAcDz0k1eTUD8hVsamYU3dlv72b3N30KR1hEju7en9DetDu6BV-0mO3/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/mengirim-file-google-drive-ke-telegram.html) \] 
 
-**Info Folder dan ZIP Folder Google Drive dengan Apps Script**  
+**Mengakses Folder dan ZIP Folder Google Drive dengan Apps Script**  
 \[ [Code.gs](https://script.google.com/d/1BuuoVEaJlPzfk7sVJPWikLRM_y6scvWKuUOHHVGiSFr_ovXqu347GZfq/edit?usp=sharing) \] 
 \[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/mengakses-folder-google-drive-dengan-apps-script.html) \] 
 \[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/zip-folder-google-drive-dengan-apps-script.html) \] 
