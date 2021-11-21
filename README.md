@@ -13,6 +13,14 @@
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/menyisipkan-library-javascript-eksternal-di-apps-script.html) \] 
 \[ [Code.gs](https://script.google.com/d/1ofX1c6ssz-m5dDNbx_Hd7YHX1eF66Dwwg7EQkvLvTnwsh-DEYDR4i1VJ/edit?usp=sharing) \]  
 
+**Inline Bot Telegram Dengan DuckDuckGo Instant Answer**  
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/inline-bot-telegram-dengan-duckduckgo-instant-answer.html) \] 
+\[ [Code.gs](https://script.google.com/d/14FaPl3Ovt0EHANd2ZEZu9N0mFD9XHO572lF3Q3cqYjqWg_UhtVBWBvux/edit?usp=sharing) \]  
+
+**Tombol Menu Reply Markup Dengan Custom Keyboard dan Inline Keyboard**  
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/tombol-menu-reply-markup-dengan-custom-keyboard-dan-inline-keyboard.html) \] 
+\[ [Code.gs](https://script.google.com/d/1iyInjyW-V7ifS5bgUEu6MnBoZDF9xZzrP1kvhlkrWnM-a3JaGZHnhdxB/edit?usp=sharing) \]  
+
 **Bantu dukung project tutorial ini dengan [Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)**
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
