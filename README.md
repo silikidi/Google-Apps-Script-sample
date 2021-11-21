@@ -99,6 +99,10 @@ ___
 \[ [Code.gs](https://script.google.com/d/1xVnNStDkH45G2Ftqgvp3Ytd_DoWFlkH6ugTraTEE1-zAg_s6LhnLCTXB/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/format-teks-untuk-menghias-pesan-telegram.html) \] 
 
+**Mengirim Media Group ke Chat Telegram dengan Apps Script**  
+\[ [Code.gs](https://script.google.com/d/1h2VR2S7C8d5md1jtLUNZsKs__oayzElFhui-fF726-35u2K_MuMub-uW/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/mengirim-media-group-ke-chat-telegram-dengan-apps-script.html) \] 
+
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
