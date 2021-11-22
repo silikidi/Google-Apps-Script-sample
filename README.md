@@ -124,6 +124,12 @@ ___
 \[ [Code.gs](https://script.google.com/d/13zGL4DJR9qNaRocLeCUUQvRT_9sv1JtnRdm1Pr-jBpCxbxT1Fj_EtPmO/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/09/handling-error-google-apps-script.html) \] 
 
+**Facebook Shop dengan Apps Script**  
+\[ [Code.gs](https://script.google.com/d/19RNuOqUFe1PDe4UNTO4lAr-810LYo6zWWBPVZaQVdplGbRE_hCXAIstq/edit?usp=sharing) \] 
+\[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/09/facebook-shop-dengan-google-apps-script-eksperimen-1.html) \] 
+\[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/09/facebook-shop-dengan-google-apps-script-eksperimen-2.html) \] 
+\[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/09/facebook-shop-dengan-google-apps-script-eksperimen-3.html) \] 
+
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
