@@ -53,6 +53,12 @@ ___
 \[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/command-bot-pada-deep-linking-telegram.html) \]
 \[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/command-bot-pada-group-telegram.html) \] 
 
+**Membuat Menu Command dan Merespon Command Bot Telegram**  
+\[ [Code.gs](https://script.google.com/d/1NqG-iOBM8nfC2sK13XzgAVsl2D1RMCBMEabcv6Hirn55-azfJyPZpSgj/edit?usp=sharing) \] 
+\[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/membuat-menu-command-bot-telegram.html) \] 
+\[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/meracik-script-untuk-merespon-command-bot-telegram-part-1.html) \] 
+\[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/meracik-script-untuk-merespon-command-bot-telegram-part-2.html) \] 
+
 **Poll Telegram dengan Apps Script dan Google Sheets**  
 \[ [Code.gs](https://script.google.com/d/1EAzfvQXdVCqpL5N6g_VljJ12qtTev2WD1Z-lmcMMVi3lYFEZjODxqkCb/edit?usp=sharing) \] 
 \[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/poll-telegram-dengan-apps-script.html) \] 
