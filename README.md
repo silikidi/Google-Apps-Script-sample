@@ -103,6 +103,12 @@ ___
 \[ [Code.gs](https://script.google.com/d/1h2VR2S7C8d5md1jtLUNZsKs__oayzElFhui-fF726-35u2K_MuMub-uW/edit?usp=sharing) \] 
 \[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/10/mengirim-media-group-ke-chat-telegram-dengan-apps-script.html) \] 
 
+**Mengirim Foto, Video, Sticker ke Chat Telegram dengan Apps Script**  
+\[ [Code.gs](https://script.google.com/d/1NqG-iOBM8nfC2sK13XzgAVsl2D1RMCBMEabcv6Hirn55-azfJyPZpSgj/edit?usp=sharing) \] 
+\[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/mengirim-gambar-foto-ke-chat-telegram-dengan-apps-script.html) \] 
+\[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/mengirim-video-ke-chat-telegram-dengan-apps-script.html) \] 
+\[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/mengirim-sticker-ke-chat-telegram-dengan-apps-script.html) \] 
+
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
