@@ -53,8 +53,8 @@ ___
 \[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/command-bot-pada-deep-linking-telegram.html) \]
 \[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/command-bot-pada-group-telegram.html) \] 
 
-**Membuat Menu Command dan Merespon Command Bot Telegram**  
-\[ [Code.gs](https://script.google.com/d/1NqG-iOBM8nfC2sK13XzgAVsl2D1RMCBMEabcv6Hirn55-azfJyPZpSgj/edit?usp=sharing) \] 
+**Menu Command dan Merespon Command Bot Telegram**  
+\[ [Code.gs](https://script.google.com/d/16FxkZO946IWHa-GvpgSXzMKRO0Bkn-EZ3mAS71yMVCr7hzVDwB2nnV-I/edit?usp=sharing) \] 
 \[ [Artikel Panduan 1](https://telegram-bot-script.blogspot.com/2021/10/membuat-menu-command-bot-telegram.html) \] 
 \[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/meracik-script-untuk-merespon-command-bot-telegram-part-1.html) \] 
 \[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/meracik-script-untuk-merespon-command-bot-telegram-part-2.html) \] 
@@ -115,6 +115,10 @@ ___
 \[ [Artikel Panduan 2](https://telegram-bot-script.blogspot.com/2021/10/mengirim-gambar-foto-ke-chat-telegram-dengan-apps-script.html) \] 
 \[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/mengirim-video-ke-chat-telegram-dengan-apps-script.html) \] 
 \[ [Artikel Panduan 4](https://telegram-bot-script.blogspot.com/2021/10/mengirim-sticker-ke-chat-telegram-dengan-apps-script.html) \] 
+
+**Trik Mengatasi Error 400 Bad Request Message is Not Modified**  
+\[ [Code.gs](https://script.google.com/d/1AyGtEhhghpELzEkie7JeC0tnRGcH-hPI2Lh3mfuY4pD3g--LLObA0wTv/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/11/trik-mengatasi-error-400-bad-request-message-is-not-modified.html) \] 
 
 **Error Handling Google Apps Script**  
 \[ [Code.gs](https://script.google.com/d/13zGL4DJR9qNaRocLeCUUQvRT_9sv1JtnRdm1Pr-jBpCxbxT1Fj_EtPmO/edit?usp=sharing) \] 
