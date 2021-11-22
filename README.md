@@ -7,6 +7,12 @@
 
 ___
 
+### Demo Bot Telegram:
+
+**Coming soon...** 
+
+___
+
 ### Terbaru:
 
 **Random Seed, Secret Key, Token Google, dan oAuth dengan Apps Script**  
