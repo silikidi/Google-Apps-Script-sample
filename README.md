@@ -110,6 +110,10 @@ ___
 \[ [Artikel Panduan 3](https://telegram-bot-script.blogspot.com/2021/10/mengirim-video-ke-chat-telegram-dengan-apps-script.html) \] 
 \[ [Artikel Panduan 4](https://telegram-bot-script.blogspot.com/2021/10/mengirim-sticker-ke-chat-telegram-dengan-apps-script.html) \] 
 
+**Error Handling Google Apps Script**  
+\[ [Code.gs](https://script.google.com/d/13zGL4DJR9qNaRocLeCUUQvRT_9sv1JtnRdm1Pr-jBpCxbxT1Fj_EtPmO/edit?usp=sharing) \] 
+\[ [Artikel Panduan](https://telegram-bot-script.blogspot.com/2021/09/handling-error-google-apps-script.html) \] 
+
 **Bantu dukung project tutorial ini dengan** \[ **[Trakteer SiLiKiDi](https://trakteer.id/silikidi/tip)** \]
 
 [![Trakteer SiLiKiDi](https://cdn.trakteer.id/images/embed/trbtn-red-2.png "Trakteer SiLiKiDi")](https://trakteer.id/silikidi/tip)
